@@ -1,0 +1,95 @@
+baseURL = 'https://HarrySmirth.github.io/'
+languageCode = 'en-us'
+title = 'Harry - Cybersecurity Blog'
+theme = 'PaperMod'
+
+enableRobotsTXT = true
+buildDrafts = false
+buildFuture = false
+buildExpired = false
+enableEmoji = true
+
+[minify]
+disableXML = true
+minifyOutput = true
+
+[params]
+env = "production"
+title = "Harry's Cybersecurity Blog"
+description = "Penetration testing, CTF writeups, and security research"
+author = "Harry"
+defaultTheme = "dark"
+ShowReadingTime = true
+ShowShareButtons = true
+ShowPostNavLinks = true
+ShowBreadCrumbs = true
+ShowCodeCopyButtons = true
+ShowWordCount = true
+ShowRssButtonInSectionTermList = true
+UseHugoToc = true
+disableSpecial1stPost = false
+disableScrollToTop = false
+comments = false
+hidemeta = false
+hideSummary = false
+showtoc = true
+tocopen = true
+
+[params.homeInfoParams]
+Title = "Welcome to my blog"
+Content = """
+I'm Harry, a cybersecurity professional specializing in penetration testing and vulnerability management. 
+This blog documents my journey through various CTF challenges, security research, and technical writeups.
+"""
+
+[[params.socialIcons]]
+name = "linkedin"
+url = "https://www.linkedin.com/in/harry-smith-8b00b9198/"
+
+[[params.socialIcons]]
+name = "github"
+url = "https://github.com/HarySmirth"
+
+[[params.socialIcons]]
+name = "email"
+url = "mailto:hsmith1514@gmail.com"
+
+[menu]
+[[menu.main]]
+identifier = "about"
+name = "About"
+url = "/about/"
+weight = 10
+
+[[menu.main]]
+identifier = "writeups"
+name = "Writeups"
+url = "/writeups/"
+weight = 20
+
+[[menu.main]]
+identifier = "tags"
+name = "Tags"
+url = "/tags/"
+weight = 30
+
+[[menu.main]]
+identifier = "search"
+name = "Search"
+url = "/search/"
+weight = 40
+
+[outputs]
+home = ["HTML", "RSS", "JSON"]
+
+[markup]
+[markup.highlight]
+noClasses = false
+lineNos = true
+lineNumbersInTable = true
+guessSyntax = true
+codeFences = true
+
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true
