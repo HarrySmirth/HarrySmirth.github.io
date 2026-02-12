@@ -20,3 +20,10 @@ Thumbs.db
 # Lock files
 package-lock.json
 yarn.lock
+
+# Local reference docs (not for the repo)
+WINDOWS_SETUP_GUIDE.md
+MAC_SETUP_GUIDE.md
+DEPLOYMENT_GUIDE.md
+WRITEUP_TEMPLATE.md
+EXPLOIT_QUICK_REFERENCE.md
