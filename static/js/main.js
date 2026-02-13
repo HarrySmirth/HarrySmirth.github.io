@@ -312,6 +312,33 @@
     });
   }
 
+  /* ---------- Copy Link Button (Single Pages) ---------- */
+  function initCopyLink() {
+    var postHeader = document.querySelector('.post-single .post-header');
+    if (!postHeader) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'copy-link-btn';
+    btn.innerHTML = '<span class="copy-link-bracket">[</span>\u2398 copy link<span class="copy-link-bracket">]</span>';
+    btn.setAttribute('aria-label', 'Copy link to this page');
+
+    btn.addEventListener('click', function () {
+      var url = document.querySelector('link[rel="canonical"]');
+      var href = url ? url.getAttribute('href') : window.location.href;
+
+      navigator.clipboard.writeText(href).then(function () {
+        btn.innerHTML = '<span class="copy-link-bracket">[</span>\u2714 Copied!<span class="copy-link-bracket">]</span>';
+        btn.classList.add('copied');
+        setTimeout(function () {
+          btn.innerHTML = '<span class="copy-link-bracket">[</span>\u2398 copy link<span class="copy-link-bracket">]</span>';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+
+    postHeader.appendChild(btn);
+  }
+
   /* ---------- Search Keyboard Shortcut ---------- */
   function initSearchShortcut() {
     // Add "/" hint to search nav link
@@ -366,5 +393,6 @@
     try { init404Animation(); } catch (e) { console.error('init404Animation:', e); }
     try { initFilters(); } catch (e) { console.error('initFilters:', e); }
     try { initSearchShortcut(); } catch (e) { console.error('initSearchShortcut:', e); }
+    try { initCopyLink(); } catch (e) { console.error('initCopyLink:', e); }
   });
 })();

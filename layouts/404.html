@@ -42,6 +42,28 @@
     </div>
   </div>
 
+  {{- /* Recent pages — directory listing style */ -}}
+  {{- $recent := first 5 site.RegularPages }}
+  {{- if $recent }}
+  <div class="recent-pages-404">
+    <div class="recent-pages-header">
+      <span class="prompt">harry@blog:~$</span> ls -la /var/www/recent/
+    </div>
+    <div class="recent-pages-listing">
+      <div class="listing-header">total {{ len $recent }}</div>
+      {{- range $recent }}
+      <a class="listing-row" href="{{ .Permalink }}">
+        <span class="listing-perms">drwxr-xr-x</span>
+        <span class="listing-user">harry</span>
+        <span class="listing-group">harry</span>
+        <span class="listing-date">{{ .Date.Format "Jan _2 15:04" }}</span>
+        <span class="listing-name">{{ .Title }}</span>
+      </a>
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+
   <a href="{{ .Site.BaseURL }}" class="terminal-home-link">$ cd /home &rarr;</a>
 </div>
 {{ end }}

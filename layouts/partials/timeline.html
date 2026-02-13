@@ -1,0 +1,28 @@
+{{- /* Timeline — auto-populated git-log style activity feed */ -}}
+{{- $allPages := where site.RegularPages "Section" "in" (slice "writeups" "posts") -}}
+{{- $sorted := sort $allPages "Date" "desc" -}}
+{{- $recent := first 8 $sorted -}}
+
+{{- if $recent }}
+<div class="timeline-section">
+  <h2>git log --oneline --recent</h2>
+  <div class="timeline">
+    {{- range $i, $page := $recent }}
+    {{- $type := "post" -}}
+    {{- if eq $page.Section "writeups" }}{{ $type = "writeup" }}{{ end -}}
+    {{- $hash := substr (md5 $page.Title) 0 7 -}}
+    <div class="timeline-entry" style="animation-delay: {{ mul $i 100 }}ms">
+      <div class="timeline-dot {{ $type }}"></div>
+      <div class="timeline-content">
+        <div class="timeline-meta">
+          <span class="timeline-hash">{{ $hash }}</span>
+          <span class="timeline-date">{{ $page.Date.Format "2006-01-02" }}</span>
+          <span class="timeline-type badge-{{ $type }}">{{ $type }}</span>
+        </div>
+        <a class="timeline-title" href="{{ $page.Permalink }}">{{ $page.Title }}</a>
+      </div>
+    </div>
+    {{- end }}
+  </div>
+</div>
+{{- end }}

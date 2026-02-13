@@ -1,0 +1,130 @@
+{{- define "main" }}
+
+<header class="page-header">
+  {{- partial "breadcrumbs.html" . }}
+  <h1>
+    {{ .Title }}
+    {{- if and (or (eq .Kind "term") (eq .Kind "section")) (.Param "ShowRssButtonInSectionTermList") }}
+    {{- with .OutputFormats.Get "rss" }}
+    <a href="{{ .RelPermalink }}" title="RSS" aria-label="RSS">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" height="23">
+        <path d="M4 11a9 9 0 0 1 9 9" />
+        <path d="M4 4a16 16 0 0 1 16 16" />
+        <circle cx="5" cy="19" r="1" />
+      </svg>
+    </a>
+    {{- end }}
+    {{- end }}
+  </h1>
+</header>
+
+<div class="terms-terminal-header">
+  <span class="prompt">$</span> ls ./{{ .Title | lower }}/
+</div>
+
+{{- /* Categorise tags into groups */ -}}
+{{- $platformTags := slice "tryhackme" "hackthebox" "thm" "htb" -}}
+{{- $difficultyTags := slice "easy" "medium" "hard" "insane" -}}
+{{- $metaTags := slice "ctf" -}}
+
+{{- $platforms := slice -}}
+{{- $difficulties := slice -}}
+{{- $techniques := slice -}}
+{{- $other := slice -}}
+
+{{- range .Pages }}
+  {{- $name := .Name | lower -}}
+  {{- $isPlatform := false -}}
+  {{- $isDifficulty := false -}}
+  {{- $isMeta := false -}}
+
+  {{- range $platformTags }}{{ if eq $name . }}{{ $isPlatform = true }}{{ end }}{{ end -}}
+  {{- range $difficultyTags }}{{ if eq $name . }}{{ $isDifficulty = true }}{{ end }}{{ end -}}
+  {{- range $metaTags }}{{ if eq $name . }}{{ $isMeta = true }}{{ end }}{{ end -}}
+
+  {{- if $isPlatform }}
+    {{- $platforms = $platforms | append . -}}
+  {{- else if $isDifficulty }}
+    {{- $difficulties = $difficulties | append . -}}
+  {{- else if $isMeta }}
+    {{- $other = $other | append . -}}
+  {{- else }}
+    {{- $techniques = $techniques | append . -}}
+  {{- end }}
+{{- end }}
+
+<div class="terms-groups">
+  {{- if $platforms }}
+  <div class="terms-group">
+    <h2 class="terms-group-title">
+      <span class="terms-group-icon">&#9654;</span> Platforms
+    </h2>
+    <div class="terms-chips">
+      {{- range $platforms }}
+      <a class="terms-chip platform" href="{{ .Permalink }}">
+        {{ .Name }}
+        <span class="terms-chip-count">{{ len .Pages }}</span>
+      </a>
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+
+  {{- if $difficulties }}
+  <div class="terms-group">
+    <h2 class="terms-group-title">
+      <span class="terms-group-icon">&#9654;</span> Difficulties
+    </h2>
+    <div class="terms-chips">
+      {{- range $difficulties }}
+      {{- $dClass := "" -}}
+      {{- $dName := .Name | lower -}}
+      {{- if eq $dName "easy" }}{{ $dClass = "diff-easy" }}
+      {{- else if eq $dName "medium" }}{{ $dClass = "diff-medium" }}
+      {{- else if eq $dName "hard" }}{{ $dClass = "diff-hard" }}
+      {{- else if eq $dName "insane" }}{{ $dClass = "diff-insane" }}
+      {{- end }}
+      <a class="terms-chip difficulty {{ $dClass }}" href="{{ .Permalink }}">
+        {{ .Name }}
+        <span class="terms-chip-count">{{ len .Pages }}</span>
+      </a>
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+
+  {{- if $techniques }}
+  <div class="terms-group">
+    <h2 class="terms-group-title">
+      <span class="terms-group-icon">&#9654;</span> Techniques
+    </h2>
+    <div class="terms-chips">
+      {{- range $techniques }}
+      <a class="terms-chip technique" href="{{ .Permalink }}">
+        {{ .Name }}
+        <span class="terms-chip-count">{{ len .Pages }}</span>
+      </a>
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+
+  {{- if $other }}
+  <div class="terms-group">
+    <h2 class="terms-group-title">
+      <span class="terms-group-icon">&#9654;</span> Other
+    </h2>
+    <div class="terms-chips">
+      {{- range $other }}
+      <a class="terms-chip" href="{{ .Permalink }}">
+        {{ .Name }}
+        <span class="terms-chip-count">{{ len .Pages }}</span>
+      </a>
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+</div>
+
+{{- end }}{{/* end main */}}

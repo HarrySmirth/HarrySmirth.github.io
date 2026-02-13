@@ -1300,6 +1300,473 @@ html {
   vertical-align: middle;
 }
 
+/* ---------- Page Entrance Animation ---------- */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main {
+  animation: fadeSlideIn 0.3s ease-out;
+}
+
+/* ---------- Card Hover Enhancement ---------- */
+.post-entry {
+  transition: all 0.3s ease, transform 0.25s ease;
+}
+
+.post-entry:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 20px var(--neon-green-dim), inset 0 0 16px var(--neon-green-dim);
+}
+
+/* ---------- Nav Link Animated Underline ---------- */
+#menu a {
+  position: relative;
+  overflow: hidden;
+}
+
+#menu a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--neon-green);
+  transition: width 0.3s ease;
+}
+
+#menu a:hover::after,
+#menu .active::after {
+  width: 100%;
+}
+
+/* ---------- Tag Chip Hover Scale ---------- */
+.post-tags a,
+.tags-list .tag-item,
+.technique-chip,
+.card-tag {
+  transition: all 0.2s ease, transform 0.2s ease;
+}
+
+.post-tags a:hover,
+.tags-list .tag-item:hover,
+.technique-chip:hover,
+.card-tag:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- Staggered Stat Card Animation ---------- */
+@keyframes statCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-card {
+  opacity: 0;
+  animation: statCardIn 0.4s ease-out forwards;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0ms; }
+.stat-card:nth-child(2) { animation-delay: 100ms; }
+.stat-card:nth-child(3) { animation-delay: 200ms; }
+.stat-card:nth-child(4) { animation-delay: 300ms; }
+
+/* ---------- Timeline ---------- */
+.timeline-section {
+  margin: 2rem 0;
+}
+
+.timeline-section h2 {
+  color: var(--cyan) !important;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.timeline-section h2::before {
+  content: '$ ';
+  color: var(--neon-green);
+  opacity: 0.7;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 24px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-color);
+}
+
+.timeline-entry {
+  position: relative;
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: fadeSlideIn 0.3s ease-out forwards;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -20px;
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 6px var(--neon-green-dim);
+  z-index: 1;
+}
+
+.timeline-dot.writeup {
+  background: var(--cyan);
+  box-shadow: 0 0 6px var(--cyan-dim);
+}
+
+.timeline-content {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.timeline-content:hover {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green-dim);
+}
+
+.timeline-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.3rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+}
+
+.timeline-hash {
+  color: var(--yellow);
+}
+
+.timeline-date {
+  color: var(--text-muted);
+}
+
+.timeline-type {
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-writeup {
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  border: 1px solid rgba(0, 180, 216, 0.3);
+}
+
+.badge-post {
+  background: var(--neon-green-dim);
+  color: var(--neon-green);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+.timeline-title {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.timeline-title:hover {
+  color: var(--neon-green);
+}
+
+/* ---------- Terms / Taxonomy Page ---------- */
+.terms-terminal-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.8rem 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.terms-terminal-header .prompt {
+  color: var(--neon-green);
+}
+
+.terms-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.terms-group-title {
+  color: var(--cyan) !important;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.terms-group-icon {
+  color: var(--neon-green);
+  margin-right: 0.3rem;
+  font-size: 0.7em;
+}
+
+.terms-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.terms-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 6px 14px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.terms-chip:hover {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green-dim);
+  transform: scale(1.05);
+}
+
+.terms-chip.platform {
+  border-color: rgba(0, 255, 65, 0.3);
+}
+
+.terms-chip.difficulty.diff-easy { border-color: rgba(0, 255, 65, 0.3); color: var(--neon-green); }
+.terms-chip.difficulty.diff-medium { border-color: rgba(255, 159, 67, 0.3); color: var(--orange); }
+.terms-chip.difficulty.diff-hard { border-color: rgba(255, 71, 87, 0.3); color: var(--red); }
+.terms-chip.difficulty.diff-insane { border-color: rgba(168, 85, 247, 0.3); color: var(--purple); }
+
+.terms-chip.technique {
+  border-color: rgba(0, 180, 216, 0.25);
+  color: var(--cyan);
+}
+
+.terms-chip.technique:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan-dim);
+}
+
+.terms-chip-count {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border-radius: 3px;
+  padding: 0 6px;
+}
+
+/* ---------- 404 Recent Pages ---------- */
+.recent-pages-404 {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.recent-pages-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  padding: 1rem 1.5rem 0.5rem;
+}
+
+.recent-pages-header .prompt {
+  color: var(--neon-green);
+}
+
+.recent-pages-listing {
+  padding: 0 1.5rem 1rem;
+}
+
+.listing-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+
+.listing-row {
+  display: flex;
+  gap: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(48, 54, 61, 0.4);
+  transition: all 0.2s ease;
+}
+
+.listing-row:hover {
+  color: var(--neon-green);
+  background: var(--neon-green-dim);
+  padding-left: 4px;
+}
+
+.listing-perms {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.listing-user,
+.listing-group {
+  color: var(--cyan);
+  flex-shrink: 0;
+  min-width: 40px;
+}
+
+.listing-date {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  min-width: 90px;
+}
+
+.listing-name {
+  color: var(--neon-green);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Copy Link Button ---------- */
+.copy-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.8rem;
+}
+
+.copy-link-btn:hover {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+  background: var(--neon-green-dim);
+}
+
+.copy-link-btn.copied {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+}
+
+.copy-link-bracket {
+  opacity: 0.5;
+}
+
+/* ---------- Enhanced Search Page ---------- */
+.search-header h1 {
+  color: var(--cyan) !important;
+}
+
+.search-terminal {
+  margin-bottom: 2rem;
+}
+
+.search-prompt-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 4px 16px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-prompt-wrapper:focus-within {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 12px var(--neon-green-dim);
+}
+
+.search-prompt-symbol {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--neon-green);
+  flex-shrink: 0;
+}
+
+.search-prompt-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.search-terminal #searchInput {
+  border: none !important;
+  background: transparent !important;
+  padding: 10px 8px !important;
+  flex: 1;
+  min-width: 0;
+}
+
+.search-terminal #searchInput:focus {
+  box-shadow: none !important;
+}
+
+.search-terminal #searchInput::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+/* Blinking cursor effect for empty search */
+.search-terminal #searchInput:placeholder-shown {
+  caret-color: var(--neon-green);
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {
   .stats-grid {
@@ -1328,6 +1795,26 @@ html {
 
   .filter-label {
     min-width: 100%;
+  }
+
+  .listing-row {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .listing-perms,
+  .listing-user,
+  .listing-group {
+    display: none;
+  }
+
+  .timeline-meta {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .search-prompt-text {
+    display: none;
   }
 }
 
