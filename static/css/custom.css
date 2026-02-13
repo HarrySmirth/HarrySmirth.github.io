@@ -1059,6 +1059,247 @@ html {
   margin: 1rem 0;
 }
 
+/* ---------- Filter Bar (Writeups list) ---------- */
+.filter-bar {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  min-width: 72px;
+}
+
+.filter-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+}
+
+.filter-btn.active {
+  color: var(--bg-primary);
+  background: var(--neon-green);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green-dim);
+}
+
+.filter-no-results {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.filter-no-results .prompt { color: var(--neon-green); }
+.filter-no-results .filter-arrow { color: var(--text-muted); }
+.filter-no-results .error { color: var(--red); }
+
+/* Card badges row */
+.card-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+/* Card technique tags in list */
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.card-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 1px 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.card-tag:hover {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+}
+
+/* ---------- Writeup Single: Techniques Section ---------- */
+.techniques-section {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin: 1rem 0 1.5rem;
+}
+
+.techniques-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.techniques-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.technique-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--cyan);
+  background: var(--cyan-dim);
+  border: 1px solid rgba(0, 180, 216, 0.25);
+  border-radius: 4px;
+  padding: 2px 10px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.technique-chip:hover {
+  color: var(--bg-primary);
+  background: var(--cyan);
+  box-shadow: 0 0 8px var(--cyan-glow);
+}
+
+/* ---------- Writeup Prev/Next Nav ---------- */
+.writeup-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.writeup-nav-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  max-width: 48%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.writeup-nav-link:hover {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green-dim);
+}
+
+.writeup-nav-prompt {
+  color: var(--neon-green);
+  margin-right: 4px;
+}
+
+.writeup-nav-link.next {
+  margin-left: auto;
+  text-align: right;
+}
+
+/* ---------- About Page ---------- */
+.about-page .post-title {
+  color: var(--cyan) !important;
+}
+
+.about-content h2 {
+  position: relative;
+  padding-left: 0;
+}
+
+.about-content h2::before {
+  content: '$ cat ';
+  color: var(--neon-green);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.about-content h2::after {
+  content: '.txt';
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 400;
+  font-size: 0.8em;
+  opacity: 0.5;
+}
+
+.about-content h1::before {
+  content: none;
+}
+
+.about-content h1::after {
+  content: none;
+}
+
+/* Skill badges — style strong items in about page lists */
+.about-content li strong {
+  color: var(--cyan);
+}
+
+.about-content li {
+  margin-bottom: 0.3rem;
+}
+
+/* Skill tag display for "Security Tools:", "Systems:" etc. lines */
+.about-content p strong {
+  color: var(--cyan);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+}
+
+/* ---------- Search Hint Badge ---------- */
+.search-hint {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 0 5px;
+  margin-left: 6px;
+  line-height: 1.6;
+  vertical-align: middle;
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {
   .stats-grid {
@@ -1071,6 +1312,22 @@ html {
 
   .ascii-404 {
     font-size: 0.35rem;
+  }
+
+  .writeup-nav {
+    flex-direction: column;
+  }
+
+  .writeup-nav-link {
+    max-width: 100%;
+  }
+
+  .filter-row {
+    gap: 0.3rem;
+  }
+
+  .filter-label {
+    min-width: 100%;
   }
 }
 
