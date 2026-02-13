@@ -1,0 +1,121 @@
+{{- /* Stats Dashboard — counts writeups, platforms, difficulties, top tags */ -}}
+{{- $writeups := where .Site.RegularPages "Section" "writeups" -}}
+{{- $total := len $writeups -}}
+
+{{- /* Platform counts */ -}}
+{{- $thm := 0 -}}
+{{- $htb := 0 -}}
+{{- range $writeups -}}
+  {{- $path := .File.Dir -}}
+  {{- if findRE "tryhackme" $path -}}
+    {{- $thm = add $thm 1 -}}
+  {{- else if findRE "hackthebox" $path -}}
+    {{- $htb = add $htb 1 -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Difficulty counts (from tags) */ -}}
+{{- $easy := 0 -}}
+{{- $medium := 0 -}}
+{{- $hard := 0 -}}
+{{- $insane := 0 -}}
+{{- range $writeups -}}
+  {{- $tags := .Params.tags | default slice -}}
+  {{- range $tags -}}
+    {{- $t := . | lower -}}
+    {{- if eq $t "easy" }}{{ $easy = add $easy 1 }}
+    {{- else if eq $t "medium" }}{{ $medium = add $medium 1 }}
+    {{- else if eq $t "hard" }}{{ $hard = add $hard 1 }}
+    {{- else if eq $t "insane" }}{{ $insane = add $insane 1 }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Top 5 tags (excluding difficulty/platform meta tags) */ -}}
+{{- $skipTags := slice "easy" "medium" "hard" "insane" "tryhackme" "hackthebox" "thm" "htb" "ctf" -}}
+{{- $tagCounts := dict -}}
+{{- range $writeups -}}
+  {{- $tags := .Params.tags | default slice -}}
+  {{- range $tags -}}
+    {{- $t := . | lower -}}
+    {{- $skip := false -}}
+    {{- range $skipTags -}}
+      {{- if eq $t . }}{{ $skip = true }}{{ end -}}
+    {{- end -}}
+    {{- if not $skip -}}
+      {{- $cur := index $tagCounts $t | default 0 -}}
+      {{- $tagCounts = merge $tagCounts (dict $t (add $cur 1)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if gt $total 0 -}}
+<div class="stats-dashboard">
+  <h2>stats --writeups</h2>
+
+  {{- /* Main counts */ -}}
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">{{ $total }}</span>
+      <span class="stat-label">Total Writeups</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ $thm }}</span>
+      <span class="stat-label">TryHackMe</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ $htb }}</span>
+      <span class="stat-label">HackTheBox</span>
+    </div>
+  </div>
+
+  {{- /* Difficulty breakdown */ -}}
+  {{- if or (gt $easy 0) (gt $medium 0) (gt $hard 0) (gt $insane 0) -}}
+  <h2>stats --difficulty</h2>
+  <div class="stats-grid">
+    {{- if gt $easy 0 -}}
+    <div class="stat-card easy">
+      <span class="stat-number">{{ $easy }}</span>
+      <span class="stat-label">Easy</span>
+    </div>
+    {{- end -}}
+    {{- if gt $medium 0 -}}
+    <div class="stat-card medium">
+      <span class="stat-number">{{ $medium }}</span>
+      <span class="stat-label">Medium</span>
+    </div>
+    {{- end -}}
+    {{- if gt $hard 0 -}}
+    <div class="stat-card hard">
+      <span class="stat-number">{{ $hard }}</span>
+      <span class="stat-label">Hard</span>
+    </div>
+    {{- end -}}
+    {{- if gt $insane 0 -}}
+    <div class="stat-card insane">
+      <span class="stat-number">{{ $insane }}</span>
+      <span class="stat-label">Insane</span>
+    </div>
+    {{- end -}}
+  </div>
+  {{- end -}}
+
+  {{- /* Top tags */ -}}
+  {{- if $tagCounts -}}
+  {{- $sorted := slice -}}
+  {{- range $tag, $count := $tagCounts -}}
+    {{- $sorted = $sorted | append (dict "tag" $tag "count" $count) -}}
+  {{- end -}}
+  {{- $sorted = sort $sorted "count" "desc" -}}
+  {{- $top5 := first 5 $sorted -}}
+  {{- if $top5 }}
+  <h2>stats --top-tags</h2>
+  <div class="tags-list">
+    {{- range $top5 -}}
+    <a class="tag-item" href="{{ "/tags/" | relURL }}{{ .tag | urlize }}/">{{ .tag }}<span class="tag-count">({{ .count }})</span></a>
+    {{- end -}}
+  </div>
+  {{- end -}}
+  {{- end -}}
+</div>
+{{- end -}}

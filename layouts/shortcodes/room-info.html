@@ -1,0 +1,53 @@
+{{- /*
+  Room Info Card Shortcode
+  Usage: {{< room-info platform="TryHackMe" difficulty="Easy" completed_date="2026-02-11" time_taken="45 minutes" >}}
+*/ -}}
+{{- $platform := .Get "platform" | default "Unknown" -}}
+{{- $difficulty := .Get "difficulty" | default "Unknown" -}}
+{{- $completed := .Get "completed_date" | default "" -}}
+{{- $time := .Get "time_taken" | default "" -}}
+
+{{- $platformClass := "platform-unknown" -}}
+{{- $platformLower := $platform | lower -}}
+{{- if findRE "tryhackme|thm" $platformLower -}}
+  {{- $platformClass = "platform-tryhackme" -}}
+{{- else if findRE "hackthebox|htb" $platformLower -}}
+  {{- $platformClass = "platform-hackthebox" -}}
+{{- end -}}
+
+{{- $diffLower := $difficulty | lower -}}
+{{- $badgePlatform := "badge-tryhackme" -}}
+{{- if findRE "hackthebox|htb" $platformLower -}}
+  {{- $badgePlatform = "badge-hackthebox" -}}
+{{- end -}}
+
+{{- $badgeDiff := "badge-easy" -}}
+{{- if eq $diffLower "medium" }}{{ $badgeDiff = "badge-medium" }}
+{{- else if eq $diffLower "hard" }}{{ $badgeDiff = "badge-hard" }}
+{{- else if eq $diffLower "insane" }}{{ $badgeDiff = "badge-insane" }}
+{{- end -}}
+
+<div class="room-info {{ $platformClass }}">
+  <div class="room-info-grid">
+    <div class="room-info-item">
+      <span class="room-info-label">Platform</span>
+      <span class="room-info-value"><span class="badge {{ $badgePlatform }}">{{ $platform }}</span></span>
+    </div>
+    <div class="room-info-item">
+      <span class="room-info-label">Difficulty</span>
+      <span class="room-info-value"><span class="badge {{ $badgeDiff }}">{{ $difficulty }}</span></span>
+    </div>
+    {{- if $completed }}
+    <div class="room-info-item">
+      <span class="room-info-label">Completed</span>
+      <span class="room-info-value">{{ $completed }}</span>
+    </div>
+    {{- end }}
+    {{- if $time }}
+    <div class="room-info-item">
+      <span class="room-info-label">Time Taken</span>
+      <span class="room-info-value">{{ $time }}</span>
+    </div>
+    {{- end }}
+  </div>
+</div>
