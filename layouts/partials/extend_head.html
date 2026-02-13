@@ -6,6 +6,9 @@
 {{- /* Custom Terminal Theme CSS */ -}}
 <link rel="stylesheet" href="/css/custom.css">
 
+{{- /* Reading Progress Bar (single pages only) */ -}}
+{{ partial "reading-progress.html" . }}
+
 {{- /* Open Graph Meta Tags */ -}}
 <meta property="og:site_name" content="{{ .Site.Title }}">
 {{- if .IsPage }}

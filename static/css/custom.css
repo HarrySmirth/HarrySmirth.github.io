@@ -164,7 +164,7 @@ html {
 }
 
 /* ---------- Code Blocks ---------- */
-.post-content .highlight {
+.highlight {
   position: relative;
   background: var(--bg-secondary) !important;
   border: 1px solid var(--border-color);
@@ -173,7 +173,7 @@ html {
   overflow: hidden;
 }
 
-.post-content .highlight pre {
+.highlight pre {
   background: var(--bg-secondary) !important;
   padding: 1.2rem;
   margin: 0;
@@ -183,61 +183,100 @@ html {
   line-height: 1.6;
 }
 
-.post-content .highlight pre code {
+.highlight pre code {
   font-family: 'JetBrains Mono', monospace;
   background: transparent !important;
 }
 
-/* Language label */
-.highlight-lang-label {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 2px 10px;
+/* macOS-style titlebar */
+.code-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.code-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.code-dot.red { background: var(--red); }
+.code-dot.yellow { background: var(--yellow); }
+.code-dot.green { background: var(--neon-green); }
+
+.code-titlebar-lang {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.7rem;
   color: var(--text-muted);
-  background: var(--bg-card);
-  border-bottom-left-radius: 6px;
-  border-left: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  user-select: none;
-  z-index: 2;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Copy button */
+/* Copy button (in titlebar) */
 .code-copy-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 6px 12px;
-  background: var(--bg-card);
+  padding: 2px 10px;
+  background: transparent;
   color: var(--text-muted);
-  border: none;
-  border-bottom-left-radius: 6px;
-  border-left: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  z-index: 3;
-  opacity: 0;
-}
-
-.highlight:hover .code-copy-btn {
-  opacity: 1;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .code-copy-btn:hover {
   color: var(--neon-green);
+  border-color: var(--neon-green);
   background: var(--neon-green-dim);
 }
 
 .code-copy-btn.copied {
   color: var(--neon-green);
+  border-color: var(--neon-green);
+}
+
+.code-copy-btn .check-icon {
+  vertical-align: middle;
+}
+
+/* Scanline hover effect on code blocks */
+.highlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 65, 0.015) 2px,
+    rgba(0, 255, 65, 0.015) 4px
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.highlight:hover::after {
+  opacity: 1;
+}
+
+/* Hide PaperMod's default copy button (we use our own) */
+.copy-code {
+  display: none !important;
 }
 
 /* Inline code */
@@ -280,7 +319,7 @@ html {
   color: var(--text-secondary);
 }
 
-/* ---------- Homepage Info ---------- */
+/* ---------- Homepage Hero ---------- */
 .first-entry {
   background: var(--bg-secondary) !important;
   border: 1px solid var(--border-color);
@@ -298,12 +337,78 @@ html {
   right: 0;
   height: 2px;
   background: linear-gradient(90deg, var(--neon-green), var(--cyan), var(--neon-green));
+  z-index: 2;
 }
 
 .first-entry .entry-content {
   color: var(--text-secondary);
   font-size: 0.95rem;
   line-height: 1.8;
+}
+
+/* Hero terminal layout */
+.hero-terminal {
+  position: relative;
+}
+
+#matrix-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-terminal-prompt {
+  margin: 1.5rem 0;
+}
+
+.hero-window {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: rgba(22, 27, 34, 0.9);
+  backdrop-filter: blur(4px);
+}
+
+.hero-window .terminal-body {
+  min-height: 140px;
+}
+
+.hero-line {
+  margin-bottom: 0.2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+
+.hero-hidden {
+  display: none;
+}
+
+.hero-output {
+  color: var(--text-secondary);
+}
+
+.hero-typed {
+  color: var(--text-primary);
+}
+
+.typing-cursor::after {
+  content: '\2588';
+  color: var(--neon-green);
+  animation: blink 0.8s step-end infinite;
+}
+
+.hero-typed-cursor::after {
+  content: '\2588';
+  color: var(--neon-green);
+  animation: blink 0.8s step-end infinite;
 }
 
 /* ---------- Table of Contents ---------- */
@@ -407,25 +512,66 @@ html {
   border-color: var(--border-color);
 }
 
-/* ---------- Scroll to Top ---------- */
+/* ---------- Back to Top ---------- */
 .top-link {
-  background: var(--bg-secondary) !important;
-  border: 1px solid var(--neon-green) !important;
-  color: var(--neon-green) !important;
+  display: none !important;
+}
+
+.back-to-top {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  gap: 2px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--neon-green);
+  background: var(--bg-secondary);
+  border: 1px solid var(--neon-green);
   border-radius: 6px;
-  box-shadow: 0 0 10px var(--neon-green-dim);
+  padding: 8px 16px;
+  cursor: pointer;
+  box-shadow: 0 0 12px var(--neon-green-dim);
   transition: all 0.3s ease;
 }
 
-.top-link:hover {
-  background: var(--neon-green) !important;
-  color: var(--bg-primary) !important;
-  box-shadow: 0 0 20px var(--neon-green-glow);
+.back-to-top:hover {
+  background: var(--neon-green);
+  color: var(--bg-primary);
+  box-shadow: 0 0 24px var(--neon-green-glow);
+}
+
+.btt-prompt {
+  opacity: 0.5;
+}
+
+.btt-arrow {
+  font-weight: 700;
 }
 
 /* ---------- Stats Dashboard ---------- */
 .stats-dashboard {
   margin: 2rem 0;
+}
+
+.stats-header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.stats-header-row h2 {
+  margin-bottom: 0;
+}
+
+.stats-updated {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .stats-dashboard h2 {
@@ -441,6 +587,59 @@ html {
   content: '$ ';
   color: var(--neon-green);
   opacity: 0.7;
+}
+
+/* Progress bars */
+.progress-bars {
+  margin-bottom: 1.5rem;
+}
+
+.progress-item {
+  margin-bottom: 1rem;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.progress-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.progress-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-card);
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.progress-fill.thm {
+  background: linear-gradient(90deg, var(--neon-green), #00cc33);
+  box-shadow: 0 0 8px var(--neon-green-dim);
+}
+
+.progress-fill.htb {
+  background: linear-gradient(90deg, var(--cyan), #0090b0);
+  box-shadow: 0 0 8px var(--cyan-dim);
 }
 
 .stats-grid {
@@ -753,7 +952,7 @@ html {
   box-shadow: 0 0 20px var(--neon-green-glow);
 }
 
-/* ---------- Typing Animation (Homepage) ---------- */
+/* ---------- Typing Cursor ---------- */
 .typing-text {
   font-family: 'JetBrains Mono', monospace;
   color: var(--neon-green);
@@ -765,6 +964,25 @@ html {
 
 @keyframes cursorBlink {
   50% { border-color: transparent; }
+}
+
+/* ---------- Reading Progress Bar ---------- */
+.reading-progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: transparent;
+  z-index: 9999;
+}
+
+.reading-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--neon-green), var(--cyan));
+  box-shadow: 0 0 8px var(--neon-green-glow);
+  transition: width 50ms linear;
 }
 
 /* ---------- Selection ---------- */
