@@ -57,23 +57,13 @@
     });
   }
 
-  /* ---------- Stats Count-Up Animation ---------- */
+  /* ---------- Stats Count-Up Animation + Progress Bars ---------- */
   function initCountUp() {
-    var numbers = document.querySelectorAll('.stat-number[data-target]');
-    if (!numbers.length) return;
+    var dashboard = document.querySelector('.stats-dashboard');
+    if (!dashboard) return;
 
-    var observed = false;
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting && !observed) {
-          observed = true;
-          animateAll();
-          observer.disconnect();
-        }
-      });
-    }, { threshold: 0.3 });
-
-    observer.observe(document.querySelector('.stats-dashboard'));
+    var numbers = dashboard.querySelectorAll('.stat-number[data-target]');
+    var progressBars = document.querySelectorAll('.progress-fill[data-width]');
 
     function animateAll() {
       numbers.forEach(function (el) {
@@ -87,7 +77,6 @@
         function tick(now) {
           var elapsed = now - start;
           var progress = Math.min(elapsed / duration, 1);
-          // Ease out cubic
           var eased = 1 - Math.pow(1 - progress, 3);
           el.textContent = Math.round(eased * target);
           if (progress < 1) {
@@ -97,13 +86,29 @@
         requestAnimationFrame(tick);
       });
 
-      // Animate progress bars
-      document.querySelectorAll('.progress-fill[data-width]').forEach(function (bar) {
+      progressBars.forEach(function (bar) {
         var w = bar.getAttribute('data-width');
         setTimeout(function () {
           bar.style.width = w + '%';
         }, 400);
       });
+    }
+
+    // Use IntersectionObserver if available, otherwise animate immediately
+    if ('IntersectionObserver' in window) {
+      var observed = false;
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting && !observed) {
+            observed = true;
+            animateAll();
+            observer.disconnect();
+          }
+        });
+      }, { threshold: 0.2 });
+      observer.observe(dashboard);
+    } else {
+      animateAll();
     }
   }
 
@@ -112,44 +117,22 @@
     var body = document.getElementById('hero-terminal-body');
     if (!body) return;
 
-    var lines = [
-      { id: 'hero-line-1', typed: true, delay: 400 },
-      { id: 'hero-line-2', typed: false, delay: 600 },
-      { id: 'hero-line-3', typed: true, delay: 400 },
-      { id: 'hero-line-4', typed: false, delay: 600 },
-      { id: 'hero-line-5', typed: false, delay: 0 }
+    var sequence = [
+      { id: 'hero-line-1', typed: true, postDelay: 400 },
+      { id: 'hero-line-2', typed: false, postDelay: 600 },
+      { id: 'hero-line-3', typed: true, postDelay: 400 },
+      { id: 'hero-line-4', typed: false, postDelay: 600 },
+      { id: 'hero-line-5', typed: false, postDelay: 0 }
     ];
 
-    var current = 0;
+    var step = 0;
 
-    function processLine() {
-      if (current >= lines.length) return;
-      var cfg = lines[current];
-      var lineEl = document.getElementById(cfg.id);
-      if (!lineEl) return;
-
-      lineEl.classList.remove('hero-hidden');
-
-      if (cfg.typed) {
-        var typedSpan = lineEl.querySelector('.hero-typed');
-        if (typedSpan) {
-          var text = typedSpan.getAttribute('data-text');
-          typeText(typedSpan, text, function () {
-            current++;
-            setTimeout(processLine, cfg.delay);
-          });
-          return;
-        }
-      }
-
-      current++;
-      setTimeout(processLine, cfg.delay);
-    }
-
-    function typeText(el, text, cb) {
+    function typeText(el, text, callback) {
       var i = 0;
       var speed = 60;
+      el.textContent = '';
       el.classList.add('typing-cursor');
+
       function tick() {
         if (i < text.length) {
           el.textContent += text.charAt(i);
@@ -157,13 +140,40 @@
           setTimeout(tick, speed + Math.random() * 40);
         } else {
           el.classList.remove('typing-cursor');
-          if (cb) cb();
+          callback();
         }
       }
       tick();
     }
 
-    setTimeout(processLine, 800);
+    function nextStep() {
+      if (step >= sequence.length) return;
+
+      var cfg = sequence[step];
+      var lineEl = document.getElementById(cfg.id);
+      if (!lineEl) { step++; nextStep(); return; }
+
+      // Reveal the line
+      lineEl.classList.remove('hero-hidden');
+
+      if (cfg.typed) {
+        var typedSpan = lineEl.querySelector('.hero-typed');
+        if (typedSpan && typedSpan.getAttribute('data-text')) {
+          typeText(typedSpan, typedSpan.getAttribute('data-text'), function () {
+            step++;
+            setTimeout(nextStep, cfg.postDelay);
+          });
+          return;
+        }
+      }
+
+      // Non-typed line: just show and move on
+      step++;
+      setTimeout(nextStep, cfg.postDelay);
+    }
+
+    // Initial delay so page renders first
+    setTimeout(nextStep, 500);
   }
 
   /* ---------- Matrix Rain Background ---------- */
@@ -172,25 +182,33 @@
     if (!canvas) return;
 
     var ctx = canvas.getContext('2d');
-    var parent = canvas.parentElement;
-
-    function resize() {
-      canvas.width = parent.offsetWidth;
-      canvas.height = parent.offsetHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
+    var hero = canvas.closest('.hero-terminal');
+    if (!hero) return;
 
     var fontSize = 14;
-    var columns = Math.floor(canvas.width / fontSize);
-    var drops = [];
-    for (var i = 0; i < columns; i++) {
-      drops[i] = Math.random() * -50;
-    }
-
+    var columns, drops;
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*<>/\\|{}[]~';
 
+    function resize() {
+      var w = hero.offsetWidth;
+      var h = hero.offsetHeight;
+      // Only resize if dimensions actually changed
+      if (canvas.width === w && canvas.height === h) return;
+      canvas.width = w;
+      canvas.height = h;
+      columns = Math.floor(w / fontSize);
+      drops = [];
+      for (var i = 0; i < columns; i++) {
+        drops[i] = Math.random() * -50;
+      }
+    }
+
     function draw() {
+      if (canvas.width === 0 || canvas.height === 0) {
+        resize();
+        return;
+      }
+
       ctx.fillStyle = 'rgba(13, 17, 23, 0.08)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -208,12 +226,17 @@
       }
     }
 
-    setInterval(draw, 80);
+    // Initial sizing with a small delay to let layout settle
+    setTimeout(function () {
+      resize();
+      setInterval(draw, 80);
+    }, 100);
+
+    window.addEventListener('resize', resize);
   }
 
   /* ---------- Back to Top Button ---------- */
   function initBackToTop() {
-    // Don't double-create if PaperMod already has one
     var existing = document.querySelector('.top-link');
 
     var btn = document.createElement('button');
@@ -223,7 +246,6 @@
     btn.style.display = 'none';
     document.body.appendChild(btn);
 
-    // Hide PaperMod's default button if present
     if (existing) existing.style.display = 'none';
 
     window.addEventListener('scroll', function () {
@@ -244,13 +266,13 @@
     });
   }
 
-  /* ---------- Init ---------- */
+  /* ---------- Init — each function isolated so one failure can't cascade ---------- */
   document.addEventListener('DOMContentLoaded', function () {
-    initCodeBlocks();
-    initCountUp();
-    initHeroTerminal();
-    initMatrixRain();
-    initBackToTop();
-    init404Animation();
+    try { initCodeBlocks(); } catch (e) { console.error('initCodeBlocks:', e); }
+    try { initCountUp(); } catch (e) { console.error('initCountUp:', e); }
+    try { initHeroTerminal(); } catch (e) { console.error('initHeroTerminal:', e); }
+    try { initMatrixRain(); } catch (e) { console.error('initMatrixRain:', e); }
+    try { initBackToTop(); } catch (e) { console.error('initBackToTop:', e); }
+    try { init404Animation(); } catch (e) { console.error('init404Animation:', e); }
   });
 })();
