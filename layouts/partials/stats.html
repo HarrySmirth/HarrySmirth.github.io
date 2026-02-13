@@ -31,6 +31,13 @@
   {{- end -}}
 {{- end -}}
 
+{{- /* Most recent writeup date */ -}}
+{{- $latestDate := "" -}}
+{{- $sortedWriteups := sort $writeups "Date" "desc" -}}
+{{- with index $sortedWriteups 0 -}}
+  {{- $latestDate = .Date.Format "2 Jan 2006" -}}
+{{- end -}}
+
 {{- /* Top 5 tags (excluding difficulty/platform meta tags) */ -}}
 {{- $skipTags := slice "easy" "medium" "hard" "insane" "tryhackme" "hackthebox" "thm" "htb" "ctf" -}}
 {{- $tagCounts := dict -}}
@@ -49,23 +56,65 @@
   {{- end -}}
 {{- end -}}
 
+{{- /* THM target for progress bar */ -}}
+{{- $thmTarget := 100 -}}
+{{- $thmPct := 0 -}}
+{{- if gt $thmTarget 0 -}}
+  {{- $thmPct = div (mul $thm 100) $thmTarget -}}
+  {{- if gt $thmPct 100 }}{{ $thmPct = 100 }}{{ end -}}
+{{- end -}}
+{{- $htbTarget := 50 -}}
+{{- $htbPct := 0 -}}
+{{- if gt $htbTarget 0 -}}
+  {{- $htbPct = div (mul $htb 100) $htbTarget -}}
+  {{- if gt $htbPct 100 }}{{ $htbPct = 100 }}{{ end -}}
+{{- end -}}
+
 {{- if gt $total 0 -}}
 <div class="stats-dashboard">
-  <h2>stats --writeups</h2>
+  <div class="stats-header-row">
+    <h2>stats --writeups</h2>
+    {{- if $latestDate }}
+    <span class="stats-updated">last updated: {{ $latestDate }}</span>
+    {{- end }}
+  </div>
 
   {{- /* Main counts */ -}}
   <div class="stats-grid">
     <div class="stat-card">
-      <span class="stat-number">{{ $total }}</span>
+      <span class="stat-number" data-target="{{ $total }}">0</span>
       <span class="stat-label">Total Writeups</span>
     </div>
     <div class="stat-card">
-      <span class="stat-number">{{ $thm }}</span>
+      <span class="stat-number" data-target="{{ $thm }}">0</span>
       <span class="stat-label">TryHackMe</span>
     </div>
     <div class="stat-card">
-      <span class="stat-number">{{ $htb }}</span>
+      <span class="stat-number" data-target="{{ $htb }}">0</span>
       <span class="stat-label">HackTheBox</span>
+    </div>
+  </div>
+
+  {{- /* Progress bars */ -}}
+  <h2>stats --progress</h2>
+  <div class="progress-bars">
+    <div class="progress-item">
+      <div class="progress-header">
+        <span class="progress-label">TryHackMe</span>
+        <span class="progress-count">{{ $thm }}/{{ $thmTarget }}</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill thm" data-width="{{ $thmPct }}" style="width: 0%"></div>
+      </div>
+    </div>
+    <div class="progress-item">
+      <div class="progress-header">
+        <span class="progress-label">HackTheBox</span>
+        <span class="progress-count">{{ $htb }}/{{ $htbTarget }}</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill htb" data-width="{{ $htbPct }}" style="width: 0%"></div>
+      </div>
     </div>
   </div>
 
@@ -75,25 +124,25 @@
   <div class="stats-grid">
     {{- if gt $easy 0 -}}
     <div class="stat-card easy">
-      <span class="stat-number">{{ $easy }}</span>
+      <span class="stat-number" data-target="{{ $easy }}">0</span>
       <span class="stat-label">Easy</span>
     </div>
     {{- end -}}
     {{- if gt $medium 0 -}}
     <div class="stat-card medium">
-      <span class="stat-number">{{ $medium }}</span>
+      <span class="stat-number" data-target="{{ $medium }}">0</span>
       <span class="stat-label">Medium</span>
     </div>
     {{- end -}}
     {{- if gt $hard 0 -}}
     <div class="stat-card hard">
-      <span class="stat-number">{{ $hard }}</span>
+      <span class="stat-number" data-target="{{ $hard }}">0</span>
       <span class="stat-label">Hard</span>
     </div>
     {{- end -}}
     {{- if gt $insane 0 -}}
     <div class="stat-card insane">
-      <span class="stat-number">{{ $insane }}</span>
+      <span class="stat-number" data-target="{{ $insane }}">0</span>
       <span class="stat-label">Insane</span>
     </div>
     {{- end -}}
