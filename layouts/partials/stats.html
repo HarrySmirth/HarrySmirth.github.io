@@ -1,6 +1,9 @@
 {{- /* Stats Dashboard — counts writeups, platforms, difficulties, top tags */ -}}
-{{- $writeups := where .Site.RegularPages "Section" "writeups" -}}
+{{- /* Use global site function for reliable access regardless of partial context */ -}}
+{{- $writeups := where site.RegularPages "Section" "writeups" -}}
 {{- $total := len $writeups -}}
+
+<!-- stats-debug: found {{ $total }} writeups -->
 
 {{- /* Platform counts */ -}}
 {{- $thm := 0 -}}
@@ -33,9 +36,11 @@
 
 {{- /* Most recent writeup date */ -}}
 {{- $latestDate := "" -}}
-{{- $sortedWriteups := sort $writeups "Date" "desc" -}}
-{{- with index $sortedWriteups 0 -}}
-  {{- $latestDate = .Date.Format "2 Jan 2006" -}}
+{{- if gt $total 0 -}}
+  {{- $sortedWriteups := sort $writeups "Date" "desc" -}}
+  {{- with index $sortedWriteups 0 -}}
+    {{- $latestDate = .Date.Format "2 Jan 2006" -}}
+  {{- end -}}
 {{- end -}}
 
 {{- /* Top 5 tags (excluding difficulty/platform meta tags) */ -}}
@@ -56,21 +61,20 @@
   {{- end -}}
 {{- end -}}
 
-{{- /* THM target for progress bar */ -}}
+{{- /* Progress bar targets and percentages */ -}}
 {{- $thmTarget := 100 -}}
 {{- $thmPct := 0 -}}
-{{- if gt $thmTarget 0 -}}
+{{- if gt $thm 0 -}}
   {{- $thmPct = div (mul $thm 100) $thmTarget -}}
   {{- if gt $thmPct 100 }}{{ $thmPct = 100 }}{{ end -}}
 {{- end -}}
 {{- $htbTarget := 50 -}}
 {{- $htbPct := 0 -}}
-{{- if gt $htbTarget 0 -}}
+{{- if gt $htb 0 -}}
   {{- $htbPct = div (mul $htb 100) $htbTarget -}}
   {{- if gt $htbPct 100 }}{{ $htbPct = 100 }}{{ end -}}
 {{- end -}}
 
-{{- if gt $total 0 -}}
 <div class="stats-dashboard">
   <div class="stats-header-row">
     <h2>stats --writeups</h2>
@@ -118,36 +122,26 @@
     </div>
   </div>
 
-  {{- /* Difficulty breakdown */ -}}
-  {{- if or (gt $easy 0) (gt $medium 0) (gt $hard 0) (gt $insane 0) -}}
+  {{- /* Difficulty breakdown — always show all 4 cards */ -}}
   <h2>stats --difficulty</h2>
   <div class="stats-grid">
-    {{- if gt $easy 0 -}}
     <div class="stat-card easy">
       <span class="stat-number" data-target="{{ $easy }}">0</span>
       <span class="stat-label">Easy</span>
     </div>
-    {{- end -}}
-    {{- if gt $medium 0 -}}
     <div class="stat-card medium">
       <span class="stat-number" data-target="{{ $medium }}">0</span>
       <span class="stat-label">Medium</span>
     </div>
-    {{- end -}}
-    {{- if gt $hard 0 -}}
     <div class="stat-card hard">
       <span class="stat-number" data-target="{{ $hard }}">0</span>
       <span class="stat-label">Hard</span>
     </div>
-    {{- end -}}
-    {{- if gt $insane 0 -}}
     <div class="stat-card insane">
       <span class="stat-number" data-target="{{ $insane }}">0</span>
       <span class="stat-label">Insane</span>
     </div>
-    {{- end -}}
   </div>
-  {{- end -}}
 
   {{- /* Top tags */ -}}
   {{- if $tagCounts -}}
@@ -167,4 +161,3 @@
   {{- end -}}
   {{- end -}}
 </div>
-{{- end -}}
