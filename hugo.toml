@@ -56,9 +56,9 @@ url = "mailto:hsmith1514@gmail.com"
 
 [menu]
 [[menu.main]]
-identifier = "about"
-name = "About"
-url = "/about/"
+identifier = "posts"
+name = "Posts"
+url = "/posts/"
 weight = 10
 
 [[menu.main]]
