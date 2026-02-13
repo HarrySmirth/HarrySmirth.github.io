@@ -34,12 +34,17 @@ hidemeta = false
 hideSummary = false
 showtoc = true
 tocopen = true
+showAllPagesInHomeFeed = true
 
 [params.homeInfoParams]
 Title = "Welcome to my blog"
 Content = """
-I'm Harry, a cybersecurity professional specializing in penetration testing and vulnerability management. 
-This blog documents my journey through various CTF challenges, security research, and technical writeups.
+I'm Harry, a cybersecurity professional specialising in penetration testing and vulnerability management. 
+This blog documents my journey through various CTF challenges, security research, and technical writeups.\n\n
+> **Disclaimer**: All content on this blog is strictly for educational purposes. 
+The techniques and tools discussed are intended for use in authorised environments only. 
+I do not condone or accept any responsibility for the use of this information for malicious or illegal purposes. 
+Always obtain proper authorisation before testing any systems you do not own.
 """
 
 [[params.socialIcons]]
