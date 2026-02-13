@@ -53,7 +53,7 @@ url = "https://www.linkedin.com/in/harry-smith-8b00b9198/"
 
 [[params.socialIcons]]
 name = "github"
-url = "https://github.com/HarySmirth"
+url = "https://github.com/HarrySmirth"
 
 [[params.socialIcons]]
 name = "email"

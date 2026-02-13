@@ -72,6 +72,23 @@ Curated list of Unix binaries that can be exploited to bypass local security res
 
 The Windows equivalent of GTFOBins. Documents Windows binaries, scripts, and libraries that can be used for malicious purposes - useful for Windows privesc and AV evasion.
 
+### PrivescCheck
+**Link**: https://github.com/itm4n/PrivescCheck
+
+PowerShell script that enumerates common Windows privilege escalation vectors. A solid alternative to WinPEAS - less noisy, more readable output, and less likely to get flagged by AV.
+```powershell
+# Run on target (bypass execution policy)
+powershell -ep bypass -c ". .\PrivescCheck.ps1; Invoke-PrivescCheck"
+
+# Extended checks with more detail
+powershell -ep bypass -c ". .\PrivescCheck.ps1; Invoke-PrivescCheck -Extended -Report PrivescCheck -Format TXT,HTML"
+```
+
+### Priv2Admin
+**Link**: https://github.com/gtworek/Priv2Admin
+
+Concise reference mapping Windows privileges (e.g. `SeImpersonatePrivilege`, `SeBackupPrivilege`) to known exploitation paths. Invaluable when you spot a token privilege and need to know if and how it's exploitable - saves a lot of Googling.
+
 ### PayloadsAllTheThings
 **Link**: https://github.com/swisskyrepo/PayloadsAllTheThings
 
@@ -303,7 +320,8 @@ Practical ethical hacking content. Excellent free courses on their channel.
 | PayloadsAllTheThings | https://github.com/swisskyrepo/PayloadsAllTheThings |
 | ExploidDB | https://www.exploit-db.com |
 | CrackStation | https://crackstation.net |
-| OWASP Top 10 | https://owasp.org/www-project-top-ten |
+| OWASP Top 10 | https://owasp.org/www-project-top-ten | PrivescCheck | https://github.com/itm4n/PrivescCheck |
+| Priv2Admin | https://github.com/gtworek/Priv2Admin |
 
 ---
 
