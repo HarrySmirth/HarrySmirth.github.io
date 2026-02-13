@@ -266,6 +266,96 @@
     });
   }
 
+  /* ---------- Writeup Filter Bar ---------- */
+  function initFilters() {
+    var filterBar = document.getElementById('filter-bar');
+    if (!filterBar) return;
+
+    var cards = document.querySelectorAll('.writeup-card');
+    var noResults = document.getElementById('filter-no-results');
+    var activePlatform = 'all';
+    var activeDifficulty = 'all';
+
+    filterBar.addEventListener('click', function (e) {
+      var btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+
+      var filterType = btn.getAttribute('data-filter');
+      var value = btn.getAttribute('data-value');
+
+      // Update active state within this row
+      btn.parentElement.querySelectorAll('.filter-btn').forEach(function (b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+
+      if (filterType === 'platform') activePlatform = value;
+      if (filterType === 'difficulty') activeDifficulty = value;
+
+      var visible = 0;
+      cards.forEach(function (card) {
+        var p = card.getAttribute('data-platform') || '';
+        var d = card.getAttribute('data-difficulty') || '';
+        var showP = activePlatform === 'all' || p === activePlatform;
+        var showD = activeDifficulty === 'all' || d === activeDifficulty;
+        if (showP && showD) {
+          card.style.display = '';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      if (noResults) {
+        noResults.style.display = visible === 0 ? 'block' : 'none';
+      }
+    });
+  }
+
+  /* ---------- Search Keyboard Shortcut ---------- */
+  function initSearchShortcut() {
+    // Add "/" hint to search nav link
+    var searchLink = document.querySelector('#menu a[href*="/search"]');
+    if (searchLink && !searchLink.querySelector('.search-hint')) {
+      var hint = document.createElement('kbd');
+      hint.className = 'search-hint';
+      hint.textContent = '/';
+      searchLink.appendChild(hint);
+    }
+
+    document.addEventListener('keydown', function (e) {
+      // "/" to focus search — only when not already in an input
+      if (e.key === '/' && !isInputFocused()) {
+        e.preventDefault();
+        var searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          // Navigate to search page
+          window.location.href = '/search/';
+        }
+      }
+      // Escape to unfocus and clear
+      if (e.key === 'Escape') {
+        var active = document.activeElement;
+        if (active && active.id === 'searchInput') {
+          active.value = '';
+          active.blur();
+          // Trigger input event so PaperMod clears results
+          active.dispatchEvent(new Event('input'));
+        }
+      }
+    });
+
+    function isInputFocused() {
+      var el = document.activeElement;
+      if (!el) return false;
+      var tag = el.tagName.toLowerCase();
+      return tag === 'input' || tag === 'textarea' || tag === 'select' || el.isContentEditable;
+    }
+  }
+
   /* ---------- Init — each function isolated so one failure can't cascade ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     try { initCodeBlocks(); } catch (e) { console.error('initCodeBlocks:', e); }
@@ -274,5 +364,7 @@
     try { initMatrixRain(); } catch (e) { console.error('initMatrixRain:', e); }
     try { initBackToTop(); } catch (e) { console.error('initBackToTop:', e); }
     try { init404Animation(); } catch (e) { console.error('init404Animation:', e); }
+    try { initFilters(); } catch (e) { console.error('initFilters:', e); }
+    try { initSearchShortcut(); } catch (e) { console.error('initSearchShortcut:', e); }
   });
 })();
