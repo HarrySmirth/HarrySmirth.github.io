@@ -94,6 +94,22 @@ Concise reference mapping Windows privileges (e.g. `SeImpersonatePrivilege`, `Se
 
 Massive collection of payloads and bypasses for virtually every vulnerability type. Has dedicated sections for privesc, web vulnerabilities, file inclusion, SSRF, and much more. Incredibly comprehensive.
 
+### WES-NG (Windows Exploit Suggester - Next Generation)
+**Link**: https://github.com/bitsadmin/wesng
+
+Takes the output of `systeminfo` and cross-references it against a database of known vulnerabilities to suggest potential exploits. Updated regularly and more accurate than the original Windows Exploit Suggester.
+```bash
+# On Kali - install and update the database
+pip install wesng
+wes --update
+
+# On target - grab systeminfo output
+systeminfo > systeminfo.txt
+
+# Back on Kali - run against the output
+wes systeminfo.txt
+```
+
 ---
 
 ## Vulnerability Databases & Exploit References
@@ -321,7 +337,7 @@ Practical ethical hacking content. Excellent free courses on their channel.
 | ExploidDB | https://www.exploit-db.com |
 | CrackStation | https://crackstation.net |
 | OWASP Top 10 | https://owasp.org/www-project-top-ten | PrivescCheck | https://github.com/itm4n/PrivescCheck |
-| Priv2Admin | https://github.com/gtworek/Priv2Admin |
+| Priv2Admin | https://github.com/gtworek/Priv2Admin | WES-NG | https://github.com/bitsadmin/wesng |
 
 ---
 
