@@ -1,0 +1,47 @@
+{{ define "main" }}
+<div class="terminal-404">
+  <pre class="ascii-404">
+ ██╗  ██╗ ██████╗ ██╗  ██╗
+ ██║  ██║██╔═████╗██║  ██║
+ ███████║██║██╔██║███████║
+ ╚════██║████╔╝██║╚════██║
+      ██║╚██████╔╝     ██║
+      ╚═╝ ╚═════╝      ╚═╝
+   PAGE NOT FOUND
+  </pre>
+
+  <div class="terminal-window">
+    <div class="terminal-titlebar">
+      <span class="terminal-dot red"></span>
+      <span class="terminal-dot yellow"></span>
+      <span class="terminal-dot green"></span>
+      <span class="terminal-title">harry@blog:~</span>
+    </div>
+    <div class="terminal-body">
+      <div class="terminal-line" style="animation-delay: 0s">
+        <span class="prompt">harry@blog:~$</span> <span class="cmd">curl -I {{ .Site.BaseURL }}{{ with .Page }}{{ .RelPermalink }}{{ end }}</span>
+      </div>
+      <div class="terminal-line" style="animation-delay: 0.6s">
+        <span class="output">HTTP/1.1</span> <span class="error">404 Not Found</span>
+      </div>
+      <div class="terminal-line" style="animation-delay: 1.2s">
+        <span class="output">Server: cloudflare</span>
+      </div>
+      <div class="terminal-line" style="animation-delay: 1.8s">
+        <span class="prompt">harry@blog:~$</span> <span class="cmd">find / -name "page" -type f 2>/dev/null</span>
+      </div>
+      <div class="terminal-line" style="animation-delay: 2.4s">
+        <span class="error">No results found.</span>
+      </div>
+      <div class="terminal-line" style="animation-delay: 3.0s">
+        <span class="prompt">harry@blog:~$</span> <span class="cmd">echo "Returning to base..."</span>
+      </div>
+      <div class="terminal-line blink-cursor" style="animation-delay: 3.6s">
+        <span class="prompt">harry@blog:~$</span> <span class="cmd">cd /home</span>
+      </div>
+    </div>
+  </div>
+
+  <a href="{{ .Site.BaseURL }}" class="terminal-home-link">$ cd /home &rarr;</a>
+</div>
+{{ end }}
