@@ -133,6 +133,66 @@
       {{- end }}
     </ul>
 
+    {{- /* Related Writeups — find up to 3 by shared tags */ -}}
+    {{- if eq .Section "writeups" }}
+    {{- $currentTags := .Params.tags | default slice -}}
+    {{- $currentPermalink := .Permalink -}}
+    {{- $allWriteups := where site.RegularPages "Section" "writeups" -}}
+    {{- $scored := slice -}}
+    {{- range $allWriteups -}}
+      {{- if ne .Permalink $currentPermalink -}}
+        {{- $pageTags := .Params.tags | default slice -}}
+        {{- $shared := 0 -}}
+        {{- range $pageTags -}}
+          {{- $t := . -}}
+          {{- range $currentTags -}}
+            {{- if eq $t . }}{{ $shared = add $shared 1 }}{{ end -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if gt $shared 0 -}}
+          {{- $scored = $scored | append (dict "page" . "score" $shared) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $scored = sort $scored "score" "desc" -}}
+    {{- if gt (len $scored) 3 }}{{ $scored = first 3 $scored }}{{ end -}}
+    {{- if $scored }}
+    <div class="related-writeups">
+      <h3 class="related-header">find . -similar-to current --limit 3</h3>
+      <div class="related-grid">
+        {{- range $scored }}
+          {{- $rp := .page -}}
+          {{- $rPlatform := "" -}}
+          {{- if $rp.File -}}
+            {{- $rDir := $rp.File.Dir -}}
+            {{- if findRE "tryhackme" $rDir }}{{ $rPlatform = "tryhackme" }}
+            {{- else if findRE "hackthebox" $rDir }}{{ $rPlatform = "hackthebox" }}
+            {{- end -}}
+          {{- end -}}
+          {{- $rDifficulty := "" -}}
+          {{- range ($rp.Params.tags | default slice) -}}
+            {{- $t := . | lower -}}
+            {{- if eq $t "easy" }}{{ $rDifficulty = "easy" }}
+            {{- else if eq $t "medium" }}{{ $rDifficulty = "medium" }}
+            {{- else if eq $t "hard" }}{{ $rDifficulty = "hard" }}
+            {{- else if eq $t "insane" }}{{ $rDifficulty = "insane" }}
+            {{- end -}}
+          {{- end -}}
+        <a class="related-card" href="{{ $rp.Permalink }}">
+          <span class="related-title">{{ $rp.Title }}</span>
+          <span class="related-badges">
+            {{- if $rPlatform }}<span class="badge {{ if eq $rPlatform "tryhackme" }}badge-tryhackme{{ else }}badge-hackthebox{{ end }}">{{ if eq $rPlatform "tryhackme" }}THM{{ else }}HTB{{ end }}</span>{{ end -}}
+            {{- if $rDifficulty }}<span class="badge badge-{{ $rDifficulty }}">{{ $rDifficulty | title }}</span>
+            {{- else }}<span class="badge badge-unknown">$ unknown</span>
+            {{- end -}}
+          </span>
+        </a>
+        {{- end }}
+      </div>
+    </div>
+    {{- end }}
+    {{- end }}
+
     {{- /* Terminal-style prev/next navigation for writeups */ -}}
     {{- if eq .Section "writeups" }}
     <nav class="writeup-nav">

@@ -6,14 +6,28 @@
 {{- /* Custom Terminal Theme CSS */ -}}
 <link rel="stylesheet" href="/css/custom.css">
 
+{{- /* Print Stylesheet */ -}}
+<link rel="stylesheet" href="/css/print.css" media="print">
+
 {{- /* Reading Progress Bar (single pages only) */ -}}
 {{ partial "reading-progress.html" . }}
+
+{{- /* Meta Description */ -}}
+{{- $metaDesc := .Site.Params.description -}}
+{{- if .IsPage -}}
+  {{- with .Description }}{{ $metaDesc = . }}
+  {{- else }}{{ with .Summary }}{{ $metaDesc = . | plainify | truncate 160 }}{{ end }}
+  {{- end -}}
+{{- else if .IsSection -}}
+  {{- with .Description }}{{ $metaDesc = . }}{{ end -}}
+{{- end }}
+<meta name="description" content="{{ $metaDesc }}">
 
 {{- /* Open Graph Meta Tags */ -}}
 <meta property="og:site_name" content="{{ .Site.Title }}">
 {{- if .IsPage }}
 <meta property="og:title" content="{{ .Title }}">
-<meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Summary | truncate 200 }}{{ end }}">
+<meta property="og:description" content="{{ $metaDesc }}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="{{ .Permalink }}">
 {{- with .Params.date }}
@@ -25,7 +39,7 @@
 {{- end }}
 {{- else }}
 <meta property="og:title" content="{{ .Site.Title }}">
-<meta property="og:description" content="{{ .Site.Params.description }}">
+<meta property="og:description" content="{{ $metaDesc }}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ .Site.BaseURL }}">
 {{- end }}
@@ -37,5 +51,38 @@
 {{- /* Twitter / LinkedIn Card */ -}}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ if .IsPage }}{{ .Title }}{{ else }}{{ .Site.Title }}{{ end }}">
-<meta name="twitter:description" content="{{ if .IsPage }}{{ with .Description }}{{ . }}{{ else }}{{ .Summary | truncate 200 }}{{ end }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+<meta name="twitter:description" content="{{ $metaDesc }}">
 <meta name="twitter:image" content="{{ $ogImage }}">
+
+{{- /* JSON-LD Structured Data for Writeup/Blog Posts */ -}}
+{{- if and .IsPage (eq .Section "writeups") }}
+{{- $keywords := slice -}}
+{{- range (.Params.tags | default slice) }}{{ $keywords = $keywords | append . }}{{ end }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{ .Title }}",
+  "description": "{{ $metaDesc }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ .Site.Params.author }}"
+  },
+  "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
+  {{- with .Lastmod }}
+  "dateModified": "{{ .Format "2006-01-02T15:04:05Z07:00" }}",
+  {{- end }}
+  "url": "{{ .Permalink }}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ .Permalink }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ .Site.Title }}",
+    "url": "{{ .Site.BaseURL }}"
+  },
+  "keywords": [{{ range $i, $k := $keywords }}{{ if $i }}, {{ end }}"{{ $k }}"{{ end }}]
+}
+</script>
+{{- end }}

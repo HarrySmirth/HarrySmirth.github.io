@@ -79,6 +79,18 @@ url = "/about/"
 weight = 30
 
 [[menu.main]]
+identifier = "stats"
+name = "~/stats"
+url = "/stats/"
+weight = 35
+
+[[menu.main]]
+identifier = "arsenal"
+name = "~/arsenal"
+url = "/arsenal/"
+weight = 38
+
+[[menu.main]]
 identifier = "tags"
 name = "~/tags"
 url = "/tags/"

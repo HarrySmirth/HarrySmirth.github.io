@@ -1,0 +1,285 @@
+{{ define "main" }}
+{{- $writeups := where site.RegularPages "Section" "writeups" -}}
+{{- $total := len $writeups -}}
+
+{{- /* Platform counts */ -}}
+{{- $thm := 0 -}}
+{{- $htb := 0 -}}
+{{- range $writeups -}}
+  {{- $path := .File.Dir -}}
+  {{- if findRE "tryhackme" $path -}}{{ $thm = add $thm 1 }}
+  {{- else if findRE "hackthebox" $path -}}{{ $htb = add $htb 1 }}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Difficulty counts */ -}}
+{{- $easy := 0 -}}{{ $medium := 0 -}}{{ $hard := 0 -}}{{ $insane := 0 -}}
+{{- range $writeups -}}
+  {{- range (.Params.tags | default slice) -}}
+    {{- $t := . | lower -}}
+    {{- if eq $t "easy" }}{{ $easy = add $easy 1 }}
+    {{- else if eq $t "medium" }}{{ $medium = add $medium 1 }}
+    {{- else if eq $t "hard" }}{{ $hard = add $hard 1 }}
+    {{- else if eq $t "insane" }}{{ $insane = add $insane 1 }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Technique counts for radar chart */ -}}
+{{- $techWeb := 0 -}}{{ $techPrivesc := 0 -}}{{ $techNetwork := 0 -}}
+{{- $techCrypto := 0 -}}{{ $techForensics := 0 -}}{{ $techRE := 0 -}}
+{{- $webTags := slice "web" "xss" "sqli" "sql-injection" "lfi" "rfi" "ssrf" "file-upload" "web-exploitation" "xxe" "command-injection" -}}
+{{- $privescTags := slice "privilege-escalation" "privesc" "suid" "sudo" "kernel" "linpeas" "winpeas" -}}
+{{- $networkTags := slice "network" "pivoting" "port-forwarding" "tunneling" "smb" "ftp" "ssh" "dns" -}}
+{{- $cryptoTags := slice "crypto" "cryptography" "encryption" "hash" "rsa" "aes" -}}
+{{- $forensicsTags := slice "forensics" "steganography" "stego" "pcap" "memory" "disk" -}}
+{{- $reTags := slice "reverse-engineering" "reversing" "binary" "ghidra" "gdb" "buffer-overflow" "bof" -}}
+
+{{- range $writeups -}}
+  {{- $tags := .Params.tags | default slice -}}
+  {{- $countedWeb := false -}}{{ $countedPrivesc := false -}}{{ $countedNetwork := false -}}
+  {{- $countedCrypto := false -}}{{ $countedForensics := false -}}{{ $countedRE := false -}}
+  {{- range $tags -}}
+    {{- $t := . | lower -}}
+    {{- if not $countedWeb }}{{ range $webTags }}{{ if eq $t . }}{{ $techWeb = add $techWeb 1 }}{{ $countedWeb = true }}{{ end }}{{ end }}{{ end -}}
+    {{- if not $countedPrivesc }}{{ range $privescTags }}{{ if eq $t . }}{{ $techPrivesc = add $techPrivesc 1 }}{{ $countedPrivesc = true }}{{ end }}{{ end }}{{ end -}}
+    {{- if not $countedNetwork }}{{ range $networkTags }}{{ if eq $t . }}{{ $techNetwork = add $techNetwork 1 }}{{ $countedNetwork = true }}{{ end }}{{ end }}{{ end -}}
+    {{- if not $countedCrypto }}{{ range $cryptoTags }}{{ if eq $t . }}{{ $techCrypto = add $techCrypto 1 }}{{ $countedCrypto = true }}{{ end }}{{ end }}{{ end -}}
+    {{- if not $countedForensics }}{{ range $forensicsTags }}{{ if eq $t . }}{{ $techForensics = add $techForensics 1 }}{{ $countedForensics = true }}{{ end }}{{ end }}{{ end -}}
+    {{- if not $countedRE }}{{ range $reTags }}{{ if eq $t . }}{{ $techRE = add $techRE 1 }}{{ $countedRE = true }}{{ end }}{{ end }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Monthly timeline data */ -}}
+{{- $monthMap := dict -}}
+{{- range $writeups -}}
+  {{- $key := .Date.Format "2006-01" -}}
+  {{- $cur := index $monthMap $key | default 0 -}}
+  {{- $monthMap = merge $monthMap (dict $key (add $cur 1)) -}}
+{{- end -}}
+{{- $sortedMonths := slice -}}
+{{- range $k, $v := $monthMap -}}
+  {{- $sortedMonths = $sortedMonths | append (dict "month" $k "count" $v) -}}
+{{- end -}}
+{{- $sortedMonths = sort $sortedMonths "month" -}}
+
+<header class="page-header">
+  {{- partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+  {{- if .Description }}
+  <div class="post-description">{{ .Description }}</div>
+  {{- end }}
+</header>
+
+<div class="stats-page">
+  <div class="stats-page-summary">
+    <div class="stats-page-grid">
+      <div class="stat-card">
+        <span class="stat-number" data-target="{{ $total }}">0</span>
+        <span class="stat-label">Total Writeups</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number" data-target="{{ $thm }}">0</span>
+        <span class="stat-label">TryHackMe</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number" data-target="{{ $htb }}">0</span>
+        <span class="stat-label">HackTheBox</span>
+      </div>
+      <div class="stat-card easy">
+        <span class="stat-number" data-target="{{ $easy }}">0</span>
+        <span class="stat-label">Easy</span>
+      </div>
+      <div class="stat-card medium">
+        <span class="stat-number" data-target="{{ $medium }}">0</span>
+        <span class="stat-label">Medium</span>
+      </div>
+      <div class="stat-card hard">
+        <span class="stat-number" data-target="{{ $hard }}">0</span>
+        <span class="stat-label">Hard</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-container">
+      <h2>Platform Distribution</h2>
+      <div class="chart-wrap">
+        <canvas id="chart-platform"></canvas>
+      </div>
+    </div>
+    <div class="chart-container">
+      <h2>Difficulty Breakdown</h2>
+      <div class="chart-wrap">
+        <canvas id="chart-difficulty"></canvas>
+      </div>
+    </div>
+    <div class="chart-container chart-wide">
+      <h2>Writeups Over Time</h2>
+      <div class="chart-wrap chart-wrap-wide">
+        <canvas id="chart-timeline"></canvas>
+      </div>
+    </div>
+    <div class="chart-container">
+      <h2>Technique Coverage</h2>
+      <div class="chart-wrap">
+        <canvas id="chart-techniques"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  var green = '#00ff41';
+  var cyan = '#00b4d8';
+  var orange = '#ff9f43';
+  var red = '#ff4757';
+  var purple = '#a855f7';
+  var muted = '#484f58';
+  var gridColor = 'rgba(48, 54, 61, 0.6)';
+
+  Chart.defaults.color = '#8b949e';
+  Chart.defaults.font.family = "'JetBrains Mono', monospace";
+  Chart.defaults.font.size = 11;
+
+  // Platform doughnut
+  new Chart(document.getElementById('chart-platform'), {
+    type: 'doughnut',
+    data: {
+      labels: ['TryHackMe', 'HackTheBox'],
+      datasets: [{
+        data: [{{ $thm }}, {{ $htb }}],
+        backgroundColor: [green, cyan],
+        borderColor: '#0d1117',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 16 } }
+      }
+    }
+  });
+
+  // Difficulty bar chart
+  new Chart(document.getElementById('chart-difficulty'), {
+    type: 'bar',
+    data: {
+      labels: ['Easy', 'Medium', 'Hard', 'Insane'],
+      datasets: [{
+        label: 'Writeups',
+        data: [{{ $easy }}, {{ $medium }}, {{ $hard }}, {{ $insane }}],
+        backgroundColor: [green, orange, red, purple],
+        borderColor: [green, orange, red, purple],
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 },
+          grid: { color: gridColor }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // Timeline line chart
+  var monthLabels = [{{ range $i, $m := $sortedMonths }}{{ if $i }},{{ end }}'{{ $m.month }}'{{ end }}];
+  var monthData = [{{ range $i, $m := $sortedMonths }}{{ if $i }},{{ end }}{{ $m.count }}{{ end }}];
+
+  // Cumulative sum
+  var cumulative = [];
+  var sum = 0;
+  for (var i = 0; i < monthData.length; i++) {
+    sum += monthData[i];
+    cumulative.push(sum);
+  }
+
+  new Chart(document.getElementById('chart-timeline'), {
+    type: 'line',
+    data: {
+      labels: monthLabels,
+      datasets: [{
+        label: 'Cumulative Writeups',
+        data: cumulative,
+        borderColor: green,
+        backgroundColor: 'rgba(0, 255, 65, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: green,
+        pointBorderColor: '#0d1117',
+        pointBorderWidth: 2,
+        pointRadius: 4
+      }, {
+        label: 'Monthly',
+        data: monthData,
+        borderColor: cyan,
+        backgroundColor: 'rgba(0, 180, 216, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointBackgroundColor: cyan,
+        pointBorderColor: '#0d1117',
+        pointBorderWidth: 2,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { padding: 16 } } },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1 },
+          grid: { color: gridColor }
+        },
+        x: { grid: { color: gridColor } }
+      }
+    }
+  });
+
+  // Technique radar
+  new Chart(document.getElementById('chart-techniques'), {
+    type: 'radar',
+    data: {
+      labels: ['Web', 'Priv Esc', 'Network', 'Crypto', 'Forensics', 'Rev Eng'],
+      datasets: [{
+        label: 'Writeups',
+        data: [{{ $techWeb }}, {{ $techPrivesc }}, {{ $techNetwork }}, {{ $techCrypto }}, {{ $techForensics }}, {{ $techRE }}],
+        borderColor: cyan,
+        backgroundColor: 'rgba(0, 180, 216, 0.15)',
+        pointBackgroundColor: cyan,
+        pointBorderColor: '#0d1117',
+        pointBorderWidth: 2,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          beginAtZero: true,
+          ticks: { stepSize: 1, color: muted, backdropColor: 'transparent' },
+          grid: { color: gridColor },
+          angleLines: { color: gridColor },
+          pointLabels: { color: '#8b949e', font: { size: 11 } }
+        }
+      }
+    }
+  });
+})();
+</script>
+{{ end }}
