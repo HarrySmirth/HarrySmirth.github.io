@@ -39,6 +39,33 @@
     <footer class="entry-footer">
       {{- partial "social_icons.html" (dict "align" "center") }}
     </footer>
+    {{- /* Last Solved badge */ -}}
+    {{- $writeups := where site.RegularPages "Section" "writeups" -}}
+    {{- if gt (len $writeups) 0 -}}
+      {{- $sorted := sort $writeups "Date" "desc" -}}
+      {{- $latest := index $sorted 0 -}}
+      {{- $platform := "" -}}
+      {{- if $latest.File -}}
+        {{- $dir := $latest.File.Dir -}}
+        {{- if findRE "tryhackme" $dir }}{{ $platform = "TryHackMe" }}
+        {{- else if findRE "hackthebox" $dir }}{{ $platform = "HackTheBox" }}
+        {{- end -}}
+      {{- end -}}
+      {{- $difficulty := "" -}}
+      {{- range ($latest.Params.tags | default slice) -}}
+        {{- $t := . | lower -}}
+        {{- if eq $t "easy" }}{{ $difficulty = "Easy" }}
+        {{- else if eq $t "medium" }}{{ $difficulty = "Medium" }}
+        {{- else if eq $t "hard" }}{{ $difficulty = "Hard" }}
+        {{- else if eq $t "insane" }}{{ $difficulty = "Insane" }}
+        {{- end -}}
+      {{- end -}}
+    <div class="last-solved">
+      <span class="last-solved-label">Last solved:</span>
+      <a class="last-solved-title" href="{{ $latest.Permalink }}">{{ $latest.Title }}</a>
+      <span class="last-solved-meta">({{ if $platform }}{{ $platform }}{{ end }}{{ if and $platform $difficulty }} &middot; {{ end }}{{ if $difficulty }}{{ $difficulty }}{{ end }})</span>
+    </div>
+    {{- end -}}
   </div>
 </article>
 {{- end }}

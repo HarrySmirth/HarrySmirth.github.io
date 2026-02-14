@@ -312,31 +312,56 @@
     });
   }
 
-  /* ---------- Copy Link Button (Single Pages) ---------- */
-  function initCopyLink() {
+  /* ---------- Share Bar (Single Pages) ---------- */
+  function initShareBar() {
     var postHeader = document.querySelector('.post-single .post-header');
     if (!postHeader) return;
 
-    var btn = document.createElement('button');
-    btn.className = 'copy-link-btn';
-    btn.innerHTML = '<span class="copy-link-bracket">[</span>\u2398 copy link<span class="copy-link-bracket">]</span>';
-    btn.setAttribute('aria-label', 'Copy link to this page');
+    var canonicalEl = document.querySelector('link[rel="canonical"]');
+    var pageUrl = canonicalEl ? canonicalEl.getAttribute('href') : window.location.href;
+    var pageTitle = document.querySelector('.post-title') ? document.querySelector('.post-title').textContent.trim() : document.title;
 
-    btn.addEventListener('click', function () {
-      var url = document.querySelector('link[rel="canonical"]');
-      var href = url ? url.getAttribute('href') : window.location.href;
+    var bar = document.createElement('div');
+    bar.className = 'share-bar';
 
-      navigator.clipboard.writeText(href).then(function () {
-        btn.innerHTML = '<span class="copy-link-bracket">[</span>\u2714 Copied!<span class="copy-link-bracket">]</span>';
-        btn.classList.add('copied');
+    // Copy link button
+    var copyBtn = document.createElement('button');
+    copyBtn.className = 'share-btn share-copy';
+    copyBtn.innerHTML = '\u2398 copy link';
+    copyBtn.setAttribute('aria-label', 'Copy link');
+    copyBtn.addEventListener('click', function () {
+      navigator.clipboard.writeText(pageUrl).then(function () {
+        copyBtn.innerHTML = '\u2714 copied!';
+        copyBtn.classList.add('copied');
         setTimeout(function () {
-          btn.innerHTML = '<span class="copy-link-bracket">[</span>\u2398 copy link<span class="copy-link-bracket">]</span>';
-          btn.classList.remove('copied');
+          copyBtn.innerHTML = '\u2398 copy link';
+          copyBtn.classList.remove('copied');
         }, 2000);
       });
     });
 
-    postHeader.appendChild(btn);
+    // LinkedIn share
+    var linkedinBtn = document.createElement('a');
+    linkedinBtn.className = 'share-btn share-linkedin';
+    linkedinBtn.innerHTML = '\u2197 linkedin';
+    linkedinBtn.href = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(pageUrl);
+    linkedinBtn.target = '_blank';
+    linkedinBtn.rel = 'noopener noreferrer';
+    linkedinBtn.setAttribute('aria-label', 'Share on LinkedIn');
+
+    // Twitter share
+    var twitterBtn = document.createElement('a');
+    twitterBtn.className = 'share-btn share-twitter';
+    twitterBtn.innerHTML = '\u2197 twitter';
+    twitterBtn.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(pageTitle) + '&url=' + encodeURIComponent(pageUrl);
+    twitterBtn.target = '_blank';
+    twitterBtn.rel = 'noopener noreferrer';
+    twitterBtn.setAttribute('aria-label', 'Share on Twitter');
+
+    bar.appendChild(copyBtn);
+    bar.appendChild(linkedinBtn);
+    bar.appendChild(twitterBtn);
+    postHeader.appendChild(bar);
   }
 
   /* ---------- Search Keyboard Shortcut ---------- */
@@ -393,6 +418,6 @@
     try { init404Animation(); } catch (e) { console.error('init404Animation:', e); }
     try { initFilters(); } catch (e) { console.error('initFilters:', e); }
     try { initSearchShortcut(); } catch (e) { console.error('initSearchShortcut:', e); }
-    try { initCopyLink(); } catch (e) { console.error('initCopyLink:', e); }
+    try { initShareBar(); } catch (e) { console.error('initShareBar:', e); }
   });
 })();

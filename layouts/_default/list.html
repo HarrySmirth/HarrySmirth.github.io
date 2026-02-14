@@ -132,10 +132,12 @@
       </span>
       {{- end }}
     </h2>
-    {{- if and $isWriteups (or $platform $difficulty) }}
+    {{- if $isWriteups }}
     <div class="card-badges">
       {{- if $platform }}<span class="badge {{ $platformBadgeClass }}">{{ if eq $platform "tryhackme" }}TryHackMe{{ else }}HackTheBox{{ end }}</span>{{ end }}
-      {{- if $difficulty }}<span class="badge {{ $diffBadgeClass }}">{{ $difficulty | title }}</span>{{ end }}
+      {{- if $difficulty }}<span class="badge {{ $diffBadgeClass }}">{{ $difficulty | title }}</span>
+      {{- else }}<span class="badge badge-unknown">$ unknown</span>
+      {{- end }}
     </div>
     {{- end }}
   </header>
