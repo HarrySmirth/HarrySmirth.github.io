@@ -1,0 +1,35 @@
+{{- /* Giscus Comments — only on writeup pages */ -}}
+{{- if eq .Section "writeups" }}
+<div class="giscus-container">
+  <h3 class="giscus-header">echo "Leave a comment"</h3>
+  <!--
+    =====================================================
+    GISCUS SETUP INSTRUCTIONS
+    =====================================================
+    1. Go to https://giscus.app
+    2. Enter your GitHub repo (e.g. HarrySmirth/HarrySmirth.github.io)
+    3. Enable Discussions on your repo (Settings > Features > Discussions)
+    4. Choose a Discussion category (e.g. "Announcements" or "Comments")
+    5. Copy the data-repo, data-repo-id, data-category, and
+       data-category-id values from the generated script tag
+    6. Replace the placeholder values below with your actual values
+    =====================================================
+  -->
+  <script src="https://giscus.app/client.js"
+    data-repo="{{ site.Params.giscus.repo | default "OWNER/REPO" }}"
+    data-repo-id="{{ site.Params.giscus.repoID | default "REPO_ID" }}"
+    data-category="{{ site.Params.giscus.category | default "Comments" }}"
+    data-category-id="{{ site.Params.giscus.categoryID | default "CATEGORY_ID" }}"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="dark_dimmed"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+</div>
+{{- end }}

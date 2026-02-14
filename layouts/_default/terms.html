@@ -19,8 +19,26 @@
   </h1>
 </header>
 
-<div class="terms-terminal-header">
-  <span class="prompt">$</span> ls ./{{ .Title | lower }}/
+{{- /* Count totals */ -}}
+{{- $totalTags := len .Pages -}}
+{{- $totalPosts := 0 -}}
+{{- range .Pages }}{{ $totalPosts = add $totalPosts (len .Pages) }}{{ end -}}
+
+<div class="terms-controls">
+  <div class="terms-search-bar">
+    <span class="terms-search-prompt">$</span>
+    <span class="terms-search-cmd">grep -i</span>
+    <input type="text" id="tags-filter-input" class="terms-search-input" placeholder="search tags..." autocomplete="off">
+    <span class="terms-search-path">./tags/</span>
+  </div>
+  <div class="terms-controls-row">
+    <span class="terms-count" id="tags-count-summary">Found {{ $totalTags }} tags across {{ $totalPosts }} posts</span>
+    <div class="terms-sort-btns">
+      <span class="filter-label">Sort:</span>
+      <button class="filter-btn" data-sort="name" id="sort-name">A-Z</button>
+      <button class="filter-btn active" data-sort="count" id="sort-count">Most used</button>
+    </div>
+  </div>
 </div>
 
 {{- /* Categorise tags into groups */ -}}
@@ -54,15 +72,15 @@
   {{- end }}
 {{- end }}
 
-<div class="terms-groups">
+<div class="terms-groups" id="terms-groups">
   {{- if $platforms }}
-  <div class="terms-group">
+  <div class="terms-group" data-group="platforms">
     <h2 class="terms-group-title">
       <span class="terms-group-icon">&#9654;</span> Platforms
     </h2>
     <div class="terms-chips">
       {{- range $platforms }}
-      <a class="terms-chip platform" href="{{ .Permalink }}">
+      <a class="terms-chip platform" href="{{ .Permalink }}" data-tag="{{ .Name | lower }}" data-count="{{ len .Pages }}">
         {{ .Name }}
         <span class="terms-chip-count">{{ len .Pages }}</span>
       </a>
@@ -72,7 +90,7 @@
   {{- end }}
 
   {{- if $difficulties }}
-  <div class="terms-group">
+  <div class="terms-group" data-group="difficulties">
     <h2 class="terms-group-title">
       <span class="terms-group-icon">&#9654;</span> Difficulties
     </h2>
@@ -85,7 +103,7 @@
       {{- else if eq $dName "hard" }}{{ $dClass = "diff-hard" }}
       {{- else if eq $dName "insane" }}{{ $dClass = "diff-insane" }}
       {{- end }}
-      <a class="terms-chip difficulty {{ $dClass }}" href="{{ .Permalink }}">
+      <a class="terms-chip difficulty {{ $dClass }}" href="{{ .Permalink }}" data-tag="{{ .Name | lower }}" data-count="{{ len .Pages }}">
         {{ .Name }}
         <span class="terms-chip-count">{{ len .Pages }}</span>
       </a>
@@ -95,13 +113,13 @@
   {{- end }}
 
   {{- if $techniques }}
-  <div class="terms-group">
+  <div class="terms-group" data-group="techniques">
     <h2 class="terms-group-title">
       <span class="terms-group-icon">&#9654;</span> Techniques
     </h2>
     <div class="terms-chips">
       {{- range $techniques }}
-      <a class="terms-chip technique" href="{{ .Permalink }}">
+      <a class="terms-chip technique" href="{{ .Permalink }}" data-tag="{{ .Name | lower }}" data-count="{{ len .Pages }}">
         {{ .Name }}
         <span class="terms-chip-count">{{ len .Pages }}</span>
       </a>
@@ -111,13 +129,13 @@
   {{- end }}
 
   {{- if $other }}
-  <div class="terms-group">
+  <div class="terms-group" data-group="other">
     <h2 class="terms-group-title">
       <span class="terms-group-icon">&#9654;</span> Other
     </h2>
     <div class="terms-chips">
       {{- range $other }}
-      <a class="terms-chip" href="{{ .Permalink }}">
+      <a class="terms-chip" href="{{ .Permalink }}" data-tag="{{ .Name | lower }}" data-count="{{ len .Pages }}">
         {{ .Name }}
         <span class="terms-chip-count">{{ len .Pages }}</span>
       </a>
@@ -126,5 +144,75 @@
   </div>
   {{- end }}
 </div>
+
+<script>
+(function() {
+  var input = document.getElementById('tags-filter-input');
+  var summary = document.getElementById('tags-count-summary');
+  var allChips = document.querySelectorAll('.terms-chip');
+  var groups = document.querySelectorAll('.terms-group');
+  var sortNameBtn = document.getElementById('sort-name');
+  var sortCountBtn = document.getElementById('sort-count');
+  if (!input || !allChips.length) return;
+
+  function updateFilter() {
+    var q = input.value.toLowerCase().trim();
+    var visibleTags = 0;
+    var visiblePosts = 0;
+
+    allChips.forEach(function(chip) {
+      var tag = chip.getAttribute('data-tag') || '';
+      var count = parseInt(chip.getAttribute('data-count'), 10) || 0;
+      if (!q || tag.indexOf(q) !== -1) {
+        chip.style.display = '';
+        visibleTags++;
+        visiblePosts += count;
+      } else {
+        chip.style.display = 'none';
+      }
+    });
+
+    groups.forEach(function(g) {
+      var chips = g.querySelectorAll('.terms-chip');
+      var anyVisible = false;
+      chips.forEach(function(c) { if (c.style.display !== 'none') anyVisible = true; });
+      g.style.display = anyVisible ? '' : 'none';
+    });
+
+    summary.textContent = 'Found ' + visibleTags + ' tags across ' + visiblePosts + ' posts';
+  }
+
+  function sortChips(mode) {
+    groups.forEach(function(g) {
+      var container = g.querySelector('.terms-chips');
+      if (!container) return;
+      var chips = Array.from(container.querySelectorAll('.terms-chip'));
+      chips.sort(function(a, b) {
+        if (mode === 'name') {
+          return (a.getAttribute('data-tag') || '').localeCompare(b.getAttribute('data-tag') || '');
+        }
+        return (parseInt(b.getAttribute('data-count'), 10) || 0) - (parseInt(a.getAttribute('data-count'), 10) || 0);
+      });
+      chips.forEach(function(c) { container.appendChild(c); });
+    });
+  }
+
+  input.addEventListener('input', updateFilter);
+
+  sortNameBtn.addEventListener('click', function() {
+    sortNameBtn.classList.add('active');
+    sortCountBtn.classList.remove('active');
+    sortChips('name');
+  });
+
+  sortCountBtn.addEventListener('click', function() {
+    sortCountBtn.classList.add('active');
+    sortNameBtn.classList.remove('active');
+    sortChips('count');
+  });
+
+  sortChips('count');
+})();
+</script>
 
 {{- end }}{{/* end main */}}

@@ -408,7 +408,99 @@
     }
   }
 
+  /* ---------- Page Loading Bar ---------- */
+  function initLoadingBar() {
+    var bar = document.createElement('div');
+    bar.className = 'page-loading-bar';
+    document.body.appendChild(bar);
+
+    requestAnimationFrame(function() {
+      bar.classList.add('loading');
+    });
+
+    window.addEventListener('load', function() {
+      bar.classList.remove('loading');
+      bar.classList.add('loaded');
+      setTimeout(function() { bar.classList.remove('loaded'); }, 400);
+    });
+
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link) return;
+      var href = link.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('javascript') ||
+          link.target === '_blank' || link.hasAttribute('download')) return;
+      bar.classList.remove('loaded');
+      bar.classList.add('loading');
+    });
+  }
+
+  /* ---------- Lazy Image Loading ---------- */
+  function initLazyImages() {
+    var images = document.querySelectorAll('.post-content img');
+    if (!images.length) return;
+
+    images.forEach(function(img) {
+      if (img.complete && img.naturalWidth > 0) return;
+
+      var wrapper = document.createElement('div');
+      wrapper.className = 'lazy-img-wrapper';
+      var placeholder = document.createElement('div');
+      placeholder.className = 'lazy-img-placeholder';
+      placeholder.textContent = '$ loading image...';
+
+      img.parentNode.insertBefore(wrapper, img);
+      wrapper.appendChild(placeholder);
+      wrapper.appendChild(img);
+      img.setAttribute('loading', 'lazy');
+      img.classList.add('lazy-img');
+
+      img.addEventListener('load', function() {
+        img.classList.add('lazy-loaded');
+        placeholder.classList.add('lazy-hide');
+        setTimeout(function() { placeholder.remove(); }, 400);
+      });
+
+      img.addEventListener('error', function() {
+        placeholder.textContent = '$ error: image failed to load';
+        placeholder.classList.add('lazy-error');
+      });
+    });
+  }
+
+  /* ---------- Chart.js Error Boundaries ---------- */
+  function initChartErrorBoundaries() {
+    var canvases = document.querySelectorAll('.chart-wrap canvas');
+    if (!canvases.length) return;
+
+    setTimeout(function() {
+      canvases.forEach(function(canvas) {
+        if (typeof Chart === 'undefined') {
+          showChartError(canvas, 'Chart.js CDN failed to load');
+        } else {
+          var chart = Chart.getChart(canvas);
+          if (!chart) {
+            showChartError(canvas, 'Chart failed to initialize');
+          }
+        }
+      });
+    }, 5000);
+
+    function showChartError(canvas, message) {
+      var wrap = canvas.parentElement;
+      if (!wrap || wrap.querySelector('.chart-error')) return;
+      canvas.style.display = 'none';
+      var errorEl = document.createElement('div');
+      errorEl.className = 'chart-error';
+      errorEl.innerHTML = '<span class="chart-error-prompt">$</span> error: ' + message +
+        '<br><span class="chart-error-hint">Try refreshing the page or check your connection.</span>';
+      wrap.appendChild(errorEl);
+    }
+  }
+
   /* ---------- Init — each function isolated so one failure can't cascade ---------- */
+  initLoadingBar();
+
   document.addEventListener('DOMContentLoaded', function () {
     try { initCodeBlocks(); } catch (e) { console.error('initCodeBlocks:', e); }
     try { initCountUp(); } catch (e) { console.error('initCountUp:', e); }
@@ -419,5 +511,7 @@
     try { initFilters(); } catch (e) { console.error('initFilters:', e); }
     try { initSearchShortcut(); } catch (e) { console.error('initSearchShortcut:', e); }
     try { initShareBar(); } catch (e) { console.error('initShareBar:', e); }
+    try { initLazyImages(); } catch (e) { console.error('initLazyImages:', e); }
+    try { initChartErrorBoundaries(); } catch (e) { console.error('initChartErrorBoundaries:', e); }
   });
 })();
