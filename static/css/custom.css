@@ -2063,6 +2063,265 @@ html {
   font-size: 0.75rem;
 }
 
+/* ---------- Breadcrumbs (Terminal Path) ---------- */
+.breadcrumbs {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.8rem;
+}
+
+.breadcrumbs a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumbs a:hover {
+  color: var(--neon-green);
+}
+
+.bc-sep {
+  color: var(--text-muted);
+  margin: 0 2px;
+  opacity: 0.6;
+}
+
+/* ---------- Related Writeups ---------- */
+.related-writeups {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.related-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.related-header::before {
+  content: '$ ';
+  color: var(--neon-green);
+  opacity: 0.7;
+}
+
+.related-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.related-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.related-card:hover {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green-dim);
+  transform: translateX(4px);
+}
+
+.related-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.related-card:hover .related-title {
+  color: var(--neon-green);
+}
+
+.related-badges {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.related-badges .badge {
+  font-size: 0.65rem;
+  padding: 1px 8px;
+}
+
+/* ---------- Changelog Page ---------- */
+.changelog-page {
+  margin-top: 1rem;
+}
+
+.changelog-terminal-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.8rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.changelog-terminal-header .prompt {
+  color: var(--neon-green);
+}
+
+.changelog-timeline {
+  position: relative;
+  padding-left: 24px;
+}
+
+.changelog-timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-color);
+}
+
+.changelog-entry {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.changelog-dot {
+  position: absolute;
+  left: -20px;
+  top: 8px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+  z-index: 1;
+}
+
+.changelog-dot.new {
+  background: var(--neon-green);
+  box-shadow: 0 0 6px var(--neon-green-dim);
+}
+
+.changelog-dot.update {
+  background: var(--cyan);
+  box-shadow: 0 0 6px var(--cyan-dim);
+}
+
+.changelog-dot.fix {
+  background: var(--orange);
+  box-shadow: 0 0 6px rgba(255, 159, 67, 0.3);
+}
+
+.changelog-content {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.8rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.changelog-content:hover {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green-dim);
+}
+
+.changelog-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.3rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+}
+
+.changelog-hash {
+  color: var(--yellow);
+}
+
+.changelog-date {
+  color: var(--text-muted);
+}
+
+.changelog-desc {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.badge-changelog-new {
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: var(--neon-green-dim);
+  color: var(--neon-green);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+.badge-changelog-update {
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  border: 1px solid rgba(0, 180, 216, 0.3);
+}
+
+.badge-changelog-fix {
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(255, 159, 67, 0.1);
+  color: var(--orange);
+  border: 1px solid rgba(255, 159, 67, 0.3);
+}
+
+/* ---------- Custom Footer ---------- */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.footer-sep {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.footer-nav {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.footer-nav a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-nav a:hover {
+  color: var(--neon-green);
+}
+
 /* ---------- Reduced Motion Fallback ---------- */
 @media (prefers-reduced-motion: reduce) {
   .timeline-entry,
@@ -2134,6 +2393,26 @@ html {
 
   .stats-page-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .related-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .changelog-meta {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer-sep {
+    display: none;
   }
 }
 

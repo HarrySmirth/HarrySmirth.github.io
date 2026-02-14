@@ -1,0 +1,40 @@
+{{- if (.Param "ShowBreadCrumbs") -}}
+{{- /* Build breadcrumb segments */ -}}
+{{- $segments := slice (dict "name" "~" "url" ("/" | absLangURL)) -}}
+{{- $url := replace .Parent.Permalink (printf "%s" site.Home.Permalink) "" -}}
+{{- $langUrl := strings.TrimPrefix (printf "%s/" .Lang) $url -}}
+{{- $scratch := newScratch -}}
+{{- range $index, $element := split $langUrl "/" -}}
+  {{- $scratch.Add "path" (printf "%s/" $element) -}}
+  {{- $pg := site.GetPage ($scratch.Get "path") -}}
+  {{- if and $pg (gt (len $element) 0) -}}
+    {{- $segments = $segments | append (dict "name" ($element | lower) "url" $pg.Permalink) -}}
+  {{- end -}}
+{{- end -}}
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  {{- range $i, $seg := $segments -}}
+    {{- if gt $i 0 }}<span class="bc-sep">/</span>{{ end -}}
+    <a href="{{ $seg.url }}">{{ $seg.name }}</a>
+  {{- end -}}
+</nav>
+
+{{- /* Schema.org BreadcrumbList structured data */ -}}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {{- range $i, $seg := $segments -}}
+    {{ if gt $i 0 }},{{ end }}
+    {
+      "@type": "ListItem",
+      "position": {{ add $i 1 }},
+      "name": "{{ $seg.name }}",
+      "item": "{{ $seg.url }}"
+    }
+    {{- end }}
+  ]
+}
+</script>
+{{- end -}}

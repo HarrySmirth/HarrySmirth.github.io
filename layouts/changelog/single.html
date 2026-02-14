@@ -1,0 +1,35 @@
+{{ define "main" }}
+
+<header class="page-header">
+  {{- partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+  {{- if .Description }}
+  <div class="post-description">{{ .Description }}</div>
+  {{- end }}
+</header>
+
+<div class="changelog-page">
+  <div class="changelog-terminal-header">
+    <span class="prompt">$</span> git log --oneline --decorate
+  </div>
+
+  {{- with .Params.changelog }}
+  <div class="changelog-timeline">
+    {{- range . }}
+    <div class="changelog-entry">
+      <div class="changelog-dot {{ .type }}"></div>
+      <div class="changelog-content">
+        <div class="changelog-meta">
+          <span class="changelog-hash">#{{ substr (md5 (printf "%s%s" .date .description)) 0 7 }}</span>
+          <span class="changelog-date">{{ .date }}</span>
+          <span class="changelog-type badge-changelog-{{ .type }}">{{ .type }}</span>
+        </div>
+        <p class="changelog-desc">{{ .description }}</p>
+      </div>
+    </div>
+    {{- end }}
+  </div>
+  {{- end }}
+</div>
+
+{{ end }}
