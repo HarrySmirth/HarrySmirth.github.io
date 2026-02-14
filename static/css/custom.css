@@ -1767,6 +1767,17 @@ html {
   caret-color: var(--neon-green);
 }
 
+/* ---------- Reduced Motion Fallback ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .timeline-entry,
+  .stat-card,
+  .main {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {
   .stats-grid {
