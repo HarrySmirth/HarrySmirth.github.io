@@ -127,6 +127,104 @@
       </div>
     </div>
   </div>
+
+  {{- /* Completion Heatmap — GitHub-style contribution calendar */ -}}
+  {{- $dateCounts := dict -}}
+  {{- range $writeups -}}
+    {{- $d := .Date.Format "2006-01-02" -}}
+    {{- $cur := index $dateCounts $d | default 0 -}}
+    {{- $dateCounts = merge $dateCounts (dict $d (add $cur 1)) -}}
+  {{- end -}}
+  <div class="heatmap-container">
+    <h2>git log --format='%ad' --date=short | uniq -c</h2>
+    <div class="heatmap-scroll">
+      <div class="heatmap-grid" id="heatmap-grid"></div>
+    </div>
+    <div class="heatmap-labels" id="heatmap-labels"></div>
+    <div class="heatmap-legend">
+      <span>Less</span>
+      <span class="heatmap-legend-cell" style="background:var(--bg-card)"></span>
+      <span class="heatmap-legend-cell" style="background:rgba(0,255,65,0.25)"></span>
+      <span class="heatmap-legend-cell" style="background:rgba(0,255,65,0.45)"></span>
+      <span class="heatmap-legend-cell" style="background:rgba(0,255,65,0.65)"></span>
+      <span class="heatmap-legend-cell" style="background:rgba(0,255,65,0.85)"></span>
+      <span>More</span>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var dateCounts = { {{ range $k, $v := $dateCounts }}'{{ $k }}': {{ $v }},{{ end }} };
+    var grid = document.getElementById('heatmap-grid');
+    var labels = document.getElementById('heatmap-labels');
+    if (!grid) return;
+
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    // Go back ~52 weeks (364 days)
+    var start = new Date(today);
+    start.setDate(start.getDate() - 363);
+    // Align to Sunday
+    var dayOfWeek = start.getDay();
+    start.setDate(start.getDate() - dayOfWeek);
+
+    var tooltip = document.createElement('div');
+    tooltip.className = 'heatmap-tooltip';
+    tooltip.style.display = 'none';
+    document.body.appendChild(tooltip);
+
+    var monthPositions = {};
+    var colIndex = 0;
+    var d = new Date(start);
+
+    while (d <= today) {
+      var key = d.toISOString().slice(0, 10);
+      var count = dateCounts[key] || 0;
+      var cell = document.createElement('div');
+      cell.className = 'heatmap-cell';
+      if (count > 0) {
+        cell.setAttribute('data-count', Math.min(count, 5));
+        if (count > 4) cell.classList.add('heatmap-high');
+      }
+      cell.setAttribute('data-date', key);
+      cell.setAttribute('title', key + ': ' + count + ' writeup' + (count !== 1 ? 's' : ''));
+
+      cell.addEventListener('mouseenter', function(e) {
+        var c = dateCounts[this.getAttribute('data-date')] || 0;
+        tooltip.textContent = this.getAttribute('data-date') + ': ' + c + ' writeup' + (c !== 1 ? 's' : '');
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX + 10) + 'px';
+        tooltip.style.top = (e.clientY - 30) + 'px';
+      });
+      cell.addEventListener('mouseleave', function() {
+        tooltip.style.display = 'none';
+      });
+
+      // Track month labels
+      var mon = d.getMonth();
+      var weekCol = Math.floor((d - start) / (7 * 86400000));
+      var monKey = d.getFullYear() + '-' + mon;
+      if (!monthPositions[monKey]) {
+        monthPositions[monKey] = { col: weekCol, label: d.toLocaleString('en', { month: 'short' }) };
+      }
+
+      grid.appendChild(cell);
+      d.setDate(d.getDate() + 1);
+    }
+
+    // Month labels
+    var totalWeeks = Math.ceil(((today - start) / 86400000 + 1) / 7);
+    Object.keys(monthPositions).sort().forEach(function(k) {
+      var info = monthPositions[k];
+      var span = document.createElement('span');
+      span.textContent = info.label;
+      span.style.position = 'absolute';
+      span.style.left = (info.col * 17) + 'px';
+      labels.appendChild(span);
+    });
+    labels.style.position = 'relative';
+    labels.style.height = '16px';
+  })();
+  </script>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>

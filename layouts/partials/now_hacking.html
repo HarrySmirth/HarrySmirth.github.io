@@ -1,0 +1,35 @@
+{{- /* Now Hacking — shows the most recent in-progress writeup */ -}}
+{{- $writeups := where site.RegularPages "Section" "writeups" -}}
+{{- $inProgress := where $writeups "Params.in-progress" true -}}
+{{- $inProgress = sort $inProgress "Date" "desc" -}}
+{{- $active := first 1 $inProgress -}}
+
+<div class="now-hacking">
+  <div class="now-hacking-header">
+    <span class="now-hacking-prompt">$</span> ps aux | grep hacking
+  </div>
+  {{- if $active }}
+    {{- range $active }}
+      {{- $platform := "" -}}
+      {{- if .File -}}
+        {{- $dir := .File.Dir -}}
+        {{- if findRE "tryhackme" $dir }}{{ $platform = "TryHackMe" }}
+        {{- else if findRE "hackthebox" $dir }}{{ $platform = "HackTheBox" }}
+        {{- end -}}
+      {{- end -}}
+    <a class="now-hacking-card" href="{{ .Permalink }}">
+      <span class="now-hacking-indicator"></span>
+      <span class="now-hacking-label">[*] Active:</span>
+      <span class="now-hacking-title">{{ .Title }}</span>
+      {{- if $platform }}
+      <span class="now-hacking-platform">({{ $platform }})</span>
+      {{- end }}
+    </a>
+    {{- end }}
+  {{- else }}
+  <div class="now-hacking-empty">
+    <span class="now-hacking-indicator inactive"></span>
+    <span class="now-hacking-idle">$ no active sessions</span>
+  </div>
+  {{- end }}
+</div>

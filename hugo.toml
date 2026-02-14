@@ -119,6 +119,7 @@ unsafe = true
 
 # Giscus comments — replace placeholder values with your own from https://giscus.app
 [params.giscus]
+enabled = false
 repo = "HarrySmirth/HarrySmirth.github.io"
 repoID = "REPO_ID"
 category = "Comments"
