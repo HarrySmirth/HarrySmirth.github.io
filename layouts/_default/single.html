@@ -118,6 +118,56 @@
   {{- end }}
 
   {{- if .Content }}
+  {{- /* Floating TOC for wide screens — built from Hugo's .TableOfContents */ -}}
+  {{- if and (.Param "ShowToc") .TableOfContents }}
+  <div class="toc-floating-wrapper" id="toc-floating">
+    <nav class="toc-floating">
+      <div class="toc-floating-title">tree ./sections</div>
+      {{ .TableOfContents }}
+    </nav>
+  </div>
+  <script>
+  (function(){
+    var wrapper = document.getElementById('toc-floating');
+    if (!wrapper) return;
+    // Add class to body for hiding inline TOC on wide screens
+    if (window.matchMedia('(min-width: 1400px)').matches) {
+      document.body.classList.add('has-floating-toc');
+    }
+    window.matchMedia('(min-width: 1400px)').addEventListener('change', function(e) {
+      document.body.classList.toggle('has-floating-toc', e.matches);
+    });
+    // IntersectionObserver to highlight current section
+    var links = wrapper.querySelectorAll('a[href^="#"]');
+    if (!links.length) return;
+    var headingIds = [];
+    links.forEach(function(a) { headingIds.push(a.getAttribute('href').slice(1)); });
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          links.forEach(function(a) { a.classList.remove('toc-active'); });
+          var active = wrapper.querySelector('a[href="#' + CSS.escape(entry.target.id) + '"]');
+          if (active) active.classList.add('toc-active');
+        }
+      });
+    }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
+    headingIds.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    // Smooth scroll on click
+    links.forEach(function(a) {
+      a.addEventListener('click', function(e) {
+        e.preventDefault();
+        var target = document.getElementById(this.getAttribute('href').slice(1));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.pushState(null, null, this.getAttribute('href'));
+      });
+    });
+  })();
+  </script>
+  {{- end }}
+
   <div class="post-content">
     {{- if not (.Param "disableAnchoredHeadings") }}
     {{- partial "anchored_headings.html" .Content -}}

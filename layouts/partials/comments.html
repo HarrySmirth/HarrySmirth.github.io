@@ -1,20 +1,7 @@
-{{- /* Giscus Comments — only on writeup pages */ -}}
-{{- if eq .Section "writeups" }}
+{{- /* Giscus Comments — only on writeup pages, only when enabled */ -}}
+{{- if and (eq .Section "writeups") (site.Params.giscus.enabled) }}
 <div class="giscus-container">
   <h3 class="giscus-header">echo "Leave a comment"</h3>
-  <!--
-    =====================================================
-    GISCUS SETUP INSTRUCTIONS
-    =====================================================
-    1. Go to https://giscus.app
-    2. Enter your GitHub repo (e.g. HarrySmirth/HarrySmirth.github.io)
-    3. Enable Discussions on your repo (Settings > Features > Discussions)
-    4. Choose a Discussion category (e.g. "Announcements" or "Comments")
-    5. Copy the data-repo, data-repo-id, data-category, and
-       data-category-id values from the generated script tag
-    6. Replace the placeholder values below with your actual values
-    =====================================================
-  -->
   <script src="https://giscus.app/client.js"
     data-repo="{{ site.Params.giscus.repo | default "OWNER/REPO" }}"
     data-repo-id="{{ site.Params.giscus.repoID | default "REPO_ID" }}"
@@ -32,4 +19,18 @@
     async>
   </script>
 </div>
+{{- else if eq .Section "writeups" }}
+<!--
+  =====================================================
+  GISCUS COMMENTS — DISABLED
+  =====================================================
+  Comments are currently disabled. To enable them:
+
+  1. Install the Giscus app: https://github.com/apps/giscus
+  2. Enable Discussions on your repo (Settings > Features > Discussions)
+  3. Visit https://giscus.app to get your repo ID and category ID
+  4. Fill in params.giscus in hugo.toml with your actual values
+  5. Set giscus.enabled = true in hugo.toml
+  =====================================================
+-->
 {{- end }}

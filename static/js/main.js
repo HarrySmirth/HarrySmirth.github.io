@@ -498,6 +498,92 @@
     }
   }
 
+  /* ---------- Mobile Navigation Menu ---------- */
+  function initMobileNav() {
+    var nav = document.querySelector('.nav');
+    var menu = document.getElementById('menu');
+    if (!nav || !menu) return;
+
+    // Create hamburger button
+    var toggle = document.createElement('button');
+    toggle.className = 'mobile-nav-toggle';
+    toggle.setAttribute('aria-label', 'Toggle navigation');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.textContent = '[ \u2261 ]';
+
+    // Create dropdown
+    var dropdown = document.createElement('div');
+    dropdown.className = 'mobile-nav-dropdown';
+
+    // Clone nav links into dropdown
+    var links = menu.querySelectorAll('a');
+    links.forEach(function(link) {
+      var a = document.createElement('a');
+      a.href = link.href;
+      a.textContent = link.textContent.replace(/^\s*~\//, '');
+      if (link.classList.contains('active') || link.parentElement.classList.contains('active')) {
+        a.classList.add('active');
+      }
+      dropdown.appendChild(a);
+    });
+
+    // Insert toggle into nav (after logo, before menu)
+    var logo = nav.querySelector('.logo');
+    if (logo) {
+      logo.parentNode.insertBefore(toggle, logo.nextSibling);
+    } else {
+      nav.appendChild(toggle);
+    }
+
+    // Insert dropdown into header
+    var header = nav.closest('.header');
+    if (header) {
+      header.style.position = 'relative';
+      header.appendChild(dropdown);
+    }
+
+    var isOpen = false;
+
+    function toggleMenu() {
+      isOpen = !isOpen;
+      dropdown.classList.toggle('open', isOpen);
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      toggle.textContent = isOpen ? '[ \u2715 ]' : '[ \u2261 ]';
+    }
+
+    function closeMenu() {
+      if (!isOpen) return;
+      isOpen = false;
+      dropdown.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.textContent = '[ \u2261 ]';
+    }
+
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleMenu();
+    });
+
+    // Close on outside click
+    document.addEventListener('click', function(e) {
+      if (isOpen && !dropdown.contains(e.target) && !toggle.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    // Close after clicking a link
+    dropdown.querySelectorAll('a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        closeMenu();
+      });
+    });
+  }
+
   /* ---------- Init — each function isolated so one failure can't cascade ---------- */
   initLoadingBar();
 
@@ -513,5 +599,6 @@
     try { initShareBar(); } catch (e) { console.error('initShareBar:', e); }
     try { initLazyImages(); } catch (e) { console.error('initLazyImages:', e); }
     try { initChartErrorBoundaries(); } catch (e) { console.error('initChartErrorBoundaries:', e); }
+    try { initMobileNav(); } catch (e) { console.error('initMobileNav:', e); }
   });
 })();
