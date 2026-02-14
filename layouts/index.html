@@ -1,0 +1,118 @@
+{{- define "main" }}
+
+{{- /* ===== Hero Section ===== */ -}}
+{{- if site.Params.homeInfoParams }}
+{{- partial "home_info.html" . }}
+{{- end }}
+
+{{- /* ===== Stats Dashboard ===== */ -}}
+{{ partial "stats.html" . }}
+
+{{- /* ===== Featured Writeups ===== */ -}}
+{{- $writeups := where site.RegularPages "Section" "writeups" -}}
+{{- $featured := where $writeups "Params.featured" true -}}
+{{- if lt (len $featured) 3 -}}
+  {{- $sorted := sort $writeups "Date" "desc" -}}
+  {{- $featured = first 3 $sorted -}}
+{{- else -}}
+  {{- $featured = first 3 $featured -}}
+{{- end -}}
+
+{{- if $featured }}
+<div class="home-section">
+  <h2 class="home-section-header">ls -la ./featured-writeups/</h2>
+  <div class="featured-grid">
+    {{- range $featured }}
+      {{- $platform := "" -}}
+      {{- $platformBadge := "" -}}
+      {{- if .File -}}
+        {{- $dir := .File.Dir -}}
+        {{- if findRE "tryhackme" $dir }}{{ $platform = "TryHackMe" }}{{ $platformBadge = "badge-tryhackme" }}
+        {{- else if findRE "hackthebox" $dir }}{{ $platform = "HackTheBox" }}{{ $platformBadge = "badge-hackthebox" }}
+        {{- end -}}
+      {{- end -}}
+      {{- $difficulty := "" -}}
+      {{- $diffBadge := "" -}}
+      {{- range (.Params.tags | default slice) -}}
+        {{- $t := . | lower -}}
+        {{- if eq $t "easy" }}{{ $difficulty = "Easy" }}{{ $diffBadge = "badge-easy" }}
+        {{- else if eq $t "medium" }}{{ $difficulty = "Medium" }}{{ $diffBadge = "badge-medium" }}
+        {{- else if eq $t "hard" }}{{ $difficulty = "Hard" }}{{ $diffBadge = "badge-hard" }}
+        {{- else if eq $t "insane" }}{{ $difficulty = "Insane" }}{{ $diffBadge = "badge-insane" }}
+        {{- end -}}
+      {{- end -}}
+    <article class="featured-card">
+      <header>
+        <h3><a href="{{ .Permalink }}">{{ .Title }}</a></h3>
+        <div class="card-badges">
+          {{- if $platform }}<span class="badge {{ $platformBadge }}">{{ $platform }}</span>{{ end }}
+          {{- if $difficulty }}<span class="badge {{ $diffBadge }}">{{ $difficulty }}</span>
+          {{- else }}<span class="badge badge-unknown">$ unknown</span>
+          {{- end }}
+        </div>
+      </header>
+      <p class="featured-summary">{{ .Summary | plainify | truncate 120 }}</p>
+      <footer class="featured-meta">
+        <span>{{ .Date.Format "2006-01-02" }}</span>
+        <span>{{ .ReadingTime }} min read</span>
+      </footer>
+      <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
+    </article>
+    {{- end }}
+  </div>
+</div>
+{{- end }}
+
+{{- /* ===== Recent Posts ===== */ -}}
+{{- $posts := where site.RegularPages "Section" "posts" -}}
+{{- $recentPosts := sort $posts "Date" "desc" -}}
+{{- $recentPosts = first 2 $recentPosts -}}
+{{- if $recentPosts }}
+<div class="home-section">
+  <h2 class="home-section-header">tail -2 /var/log/posts.log</h2>
+  <div class="recent-posts-grid">
+    {{- range $recentPosts }}
+    <article class="post-entry recent-post-card">
+      <header class="entry-header">
+        <h2 class="entry-hint-parent">{{ .Title }}</h2>
+      </header>
+      <div class="entry-content">
+        <p>{{ .Summary | plainify | truncate 140 }}</p>
+      </div>
+      <footer class="entry-footer">
+        {{- partial "post_meta.html" . -}}
+      </footer>
+      <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
+    </article>
+    {{- end }}
+  </div>
+</div>
+{{- end }}
+
+{{- /* ===== Quick Links ===== */ -}}
+<div class="home-section">
+  <h2 class="home-section-header">cat ~/.bash_aliases</h2>
+  <div class="quick-links">
+    <a class="quick-link" href="{{ "/arsenal/" | relURL }}">
+      <span class="ql-prompt">$</span> ./arsenal.sh
+      <span class="ql-desc">Security tools &amp; utilities</span>
+    </a>
+    <a class="quick-link" href="{{ "/writeups/" | relURL }}">
+      <span class="ql-prompt">$</span> find ./writeups/ -type f
+      <span class="ql-desc">All CTF writeups</span>
+    </a>
+    <a class="quick-link" href="{{ "/stats/" | relURL }}">
+      <span class="ql-prompt">$</span> git log --stats
+      <span class="ql-desc">CTF statistics &amp; charts</span>
+    </a>
+    <a class="quick-link" href="{{ "/tags/" | relURL }}">
+      <span class="ql-prompt">$</span> cat tags.md
+      <span class="ql-desc">Browse by technique</span>
+    </a>
+  </div>
+</div>
+
+{{- /* ===== Activity Timeline ===== */ -}}
+{{ partial "timeline.html" . }}
+
+{{- end }}{{- /* end main */ -}}

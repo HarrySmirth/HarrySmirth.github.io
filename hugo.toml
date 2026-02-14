@@ -29,7 +29,7 @@ ShowRssButtonInSectionTermList = true
 UseHugoToc = true
 disableSpecial1stPost = false
 disableScrollToTop = false
-comments = false
+comments = true
 hidemeta = false
 hideSummary = false
 showtoc = true
@@ -116,3 +116,10 @@ codeFences = true
 [markup.goldmark]
 [markup.goldmark.renderer]
 unsafe = true
+
+# Giscus comments — replace placeholder values with your own from https://giscus.app
+[params.giscus]
+repo = "HarrySmirth/HarrySmirth.github.io"
+repoID = "REPO_ID"
+category = "Comments"
+categoryID = "CATEGORY_ID"
