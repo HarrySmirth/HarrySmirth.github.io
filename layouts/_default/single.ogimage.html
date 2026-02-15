@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200, initial-scale=1">
+<meta name="robots" content="noindex">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1200px;
+    height: 630px;
+    background: #0d1117;
+    font-family: 'JetBrains Mono', monospace;
+    color: #e6edf3;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 60px;
+    position: relative;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #00ff41, #00b4d8, #00ff41);
+  }
+  .top-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.red { background: #ff4757; }
+  .dot.yellow { background: #feca57; }
+  .dot.green { background: #00ff41; }
+  .top-path {
+    color: #8b949e;
+    font-size: 14px;
+    margin-left: 12px;
+  }
+  .prompt {
+    color: #8b949e;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .prompt span { color: #00ff41; }
+  .title {
+    font-size: 42px;
+    font-weight: 700;
+    color: #00ff41;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    text-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .tag {
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    border: 1px solid #30363d;
+    color: #8b949e;
+    background: #161b22;
+  }
+  .tag.easy { color: #00ff41; border-color: rgba(0,255,65,0.3); }
+  .tag.medium { color: #ff9f43; border-color: rgba(255,159,67,0.3); }
+  .tag.hard { color: #ff4757; border-color: rgba(255,71,87,0.3); }
+  .tag.insane { color: #a855f7; border-color: rgba(168,85,247,0.3); }
+  .tag.thm { color: #00ff41; border-color: rgba(0,255,65,0.3); }
+  .tag.htb { color: #00b4d8; border-color: rgba(0,180,216,0.3); }
+  .footer-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #30363d;
+    padding-top: 20px;
+  }
+  .site-name {
+    color: #8b949e;
+    font-size: 16px;
+  }
+  .date {
+    color: #484f58;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top-bar">
+    <span class="dot red"></span>
+    <span class="dot yellow"></span>
+    <span class="dot green"></span>
+    <span class="top-path">~/{{ .Section }}/{{ with .File }}{{ .BaseFileName }}{{ end }}</span>
+  </div>
+
+  <div class="prompt"><span>$</span> cat {{ with .File }}{{ .BaseFileName }}{{ end }}.md</div>
+
+  <div class="title">{{ .Title }}</div>
+
+  <div class="tags">
+    {{- $difficulty := "" -}}
+    {{- $platform := "" -}}
+    {{- range (.Params.tags | default slice) -}}
+      {{- $t := . | lower -}}
+      {{- if or (eq $t "easy") (eq $t "medium") (eq $t "hard") (eq $t "insane") -}}
+        {{ $difficulty = $t }}
+      {{- else if eq $t "tryhackme" -}}
+        {{ $platform = "thm" }}
+      {{- else if eq $t "hackthebox" -}}
+        {{ $platform = "htb" }}
+      {{- else -}}
+        <span class="tag">{{ . }}</span>
+      {{- end -}}
+    {{- end -}}
+    {{- if $platform }}<span class="tag {{ $platform }}">{{ if eq $platform "thm" }}TryHackMe{{ else }}HackTheBox{{ end }}</span>{{ end -}}
+    {{- if $difficulty }}<span class="tag {{ $difficulty }}">{{ $difficulty }}</span>{{ end -}}
+  </div>
+
+  <div class="footer-bar">
+    <span class="site-name">{{ site.Title }}</span>
+    <span class="date">{{ .Date.Format "2006-01-02" }}</span>
+  </div>
+</div>
+</body>
+</html>

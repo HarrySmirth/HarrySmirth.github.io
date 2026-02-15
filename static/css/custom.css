@@ -3228,3 +3228,303 @@ html {
     display: none !important;
   }
 }
+
+/* ---------- Command Builder (Arsenal) ---------- */
+.cmd-builder {
+  margin-top: 0.8rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.cmd-builder-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.cmd-builder-header .cmd-builder-prompt {
+  color: var(--neon-green);
+  margin-right: 0.3rem;
+}
+
+.cmd-builder-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  padding: 0.8rem;
+}
+
+@media (max-width: 600px) {
+  .cmd-builder-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cmd-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cmd-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cmd-input,
+.cmd-select {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 6px 8px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.cmd-input:focus,
+.cmd-select:focus {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 4px var(--neon-green-dim);
+}
+
+.cmd-select {
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238b949e'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+}
+
+.cmd-select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.cmd-output {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.cmd-result {
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--neon-green);
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.cmd-copy-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.cmd-copy-btn:hover {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+}
+
+.cmd-copy-btn.copied {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+}
+
+/* ---------- Streak Tracker ---------- */
+.streak-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+
+.streak-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.streak-header .streak-prompt {
+  color: var(--neon-green);
+  margin-right: 0.3rem;
+}
+
+.streak-body {
+  padding: 0.8rem 1rem;
+}
+
+.streak-line {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  padding: 0.3rem 0;
+}
+
+.streak-flag {
+  color: var(--cyan);
+}
+
+.streak-line span:last-child {
+  color: var(--neon-green);
+  font-weight: 600;
+}
+
+/* ---------- Time to Pwn ---------- */
+.ttp-container {
+  margin-top: 1.5rem;
+}
+
+.ttp-container h2::before {
+  content: '$ ';
+  color: var(--neon-green);
+  opacity: 0.7;
+}
+
+/* ---------- Search Results ---------- */
+.search-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  padding: 0.5rem 0;
+}
+
+.search-status.search-error {
+  color: var(--red);
+}
+
+.search-results {
+  margin-top: 0.5rem;
+}
+
+.search-group {
+  margin-bottom: 1.5rem;
+}
+
+.search-group-header {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--cyan);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
+}
+
+.search-group-header::before {
+  content: '$ ls ';
+  color: var(--neon-green);
+  opacity: 0.7;
+}
+
+.search-result-item {
+  display: block;
+  text-decoration: none;
+  padding: 0.8rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  margin-bottom: 0.3rem;
+}
+
+.search-result-item:hover,
+.search-result-item.search-active {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+.search-result-path {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.search-result-path::before {
+  content: '\2192 ';
+  color: var(--neon-green);
+  opacity: 0.5;
+}
+
+.search-result-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.search-result-item:hover .search-result-title,
+.search-result-item.search-active .search-result-title {
+  color: var(--neon-green);
+}
+
+.search-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--border-color);
+  font-weight: 400;
+}
+
+.search-badge.badge-thm { color: var(--neon-green); border-color: rgba(0,255,65,0.3); }
+.search-badge.badge-htb { color: var(--cyan); border-color: rgba(0,180,216,0.3); }
+.search-badge.badge-easy { color: var(--neon-green); border-color: rgba(0,255,65,0.3); }
+.search-badge.badge-medium { color: var(--orange); border-color: rgba(255,159,67,0.3); }
+.search-badge.badge-hard { color: var(--red); border-color: rgba(255,71,87,0.3); }
+.search-badge.badge-insane { color: var(--purple); border-color: rgba(168,85,247,0.3); }
+
+.search-result-snippet {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.search-result-snippet mark {
+  background: rgba(0, 255, 65, 0.2);
+  color: var(--neon-green);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.search-result-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+}

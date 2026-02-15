@@ -1,0 +1,31 @@
+{{- $index := slice -}}
+{{- range where .Site.RegularPages "Kind" "page" -}}
+  {{- $tags := .Params.tags | default slice -}}
+  {{- $difficulty := "" -}}
+  {{- $platform := "" -}}
+  {{- range $tags -}}
+    {{- $t := . | lower -}}
+    {{- if or (eq $t "easy") (eq $t "medium") (eq $t "hard") (eq $t "insane") }}{{ $difficulty = $t }}{{ end -}}
+    {{- if eq $t "tryhackme" }}{{ $platform = "THM" }}{{ end -}}
+    {{- if eq $t "hackthebox" }}{{ $platform = "HTB" }}{{ end -}}
+  {{- end -}}
+  {{- if not $platform -}}
+    {{- with .File -}}
+      {{- if findRE "tryhackme" .Dir }}{{ $platform = "THM" }}
+      {{- else if findRE "hackthebox" .Dir }}{{ $platform = "HTB" }}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $index = $index | append (dict
+    "title" .Title
+    "permalink" .Permalink
+    "section" .Section
+    "tags" $tags
+    "content" (.Plain | truncate 500)
+    "summary" ((.Description | default (.Summary | plainify)) | truncate 200)
+    "date" (.Date.Format "2006-01-02")
+    "difficulty" $difficulty
+    "platform" $platform
+  ) -}}
+{{- end -}}
+{{- $index | jsonify -}}

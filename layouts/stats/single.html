@@ -63,6 +63,27 @@
 {{- end -}}
 {{- $sortedMonths = sort $sortedMonths "month" -}}
 
+{{- /* Writeup dates for streak calc (sorted ascending) */ -}}
+{{- $dateList := slice -}}
+{{- range $writeups -}}
+  {{- $dateList = $dateList | append (.Date.Format "2006-01-02") -}}
+{{- end -}}
+{{- $dateList = sort $dateList -}}
+
+{{- /* Time to Pwn data */ -}}
+{{- $ttpData := slice -}}
+{{- range (sort $writeups "Date") -}}
+  {{- $tt := .Params.time_taken | default "" -}}
+  {{- if $tt -}}
+    {{- $difficulty := "unknown" -}}
+    {{- range (.Params.tags | default slice) -}}
+      {{- $t := . | lower -}}
+      {{- if or (eq $t "easy") (eq $t "medium") (eq $t "hard") (eq $t "insane") }}{{ $difficulty = $t }}{{ end -}}
+    {{- end -}}
+    {{- $ttpData = $ttpData | append (dict "title" .Title "time" $tt "difficulty" $difficulty) -}}
+  {{- end -}}
+{{- end -}}
+
 <header class="page-header">
   {{- partial "breadcrumbs.html" . }}
   <h1>{{ .Title }}</h1>
@@ -101,6 +122,68 @@
     </div>
   </div>
 
+  {{- /* Streak Tracker */ -}}
+  <div class="streak-container">
+    <div class="streak-header"><span class="streak-prompt">$</span> streak --stats</div>
+    <div class="streak-body" id="streak-body">
+      <div class="streak-line"><span class="streak-flag">--current:</span> <span id="streak-current">0 days</span></div>
+      <div class="streak-line"><span class="streak-flag">--longest:</span> <span id="streak-longest">0 days</span></div>
+      <div class="streak-line"><span class="streak-flag">--last-active:</span> <span id="streak-last">N/A</span></div>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var dates = [{{ range $i, $d := $dateList }}{{ if $i }},{{ end }}'{{ $d }}'{{ end }}];
+    if (!dates.length) return;
+    // Deduplicate and sort
+    var unique = [];
+    var seen = {};
+    dates.forEach(function(d){ if(!seen[d]){ seen[d]=true; unique.push(d); } });
+    unique.sort();
+
+    // Calculate streaks (consecutive days)
+    var current = 1;
+    var longest = 1;
+    var streak = 1;
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var lastDate = new Date(unique[unique.length - 1] + 'T00:00:00');
+
+    for (var i = unique.length - 1; i > 0; i--) {
+      var d1 = new Date(unique[i] + 'T00:00:00');
+      var d2 = new Date(unique[i-1] + 'T00:00:00');
+      var diff = (d1 - d2) / 86400000;
+      if (diff === 1) {
+        streak++;
+      } else {
+        if (streak > longest) longest = streak;
+        streak = 1;
+      }
+    }
+    if (streak > longest) longest = streak;
+
+    // Current streak: count back from most recent date
+    current = 1;
+    for (var j = unique.length - 1; j > 0; j--) {
+      var a = new Date(unique[j] + 'T00:00:00');
+      var b = new Date(unique[j-1] + 'T00:00:00');
+      if ((a - b) / 86400000 === 1) {
+        current++;
+      } else {
+        break;
+      }
+    }
+
+    // If last active date is more than 1 day ago, current streak is 0
+    var daysSinceLast = Math.floor((today - lastDate) / 86400000);
+    if (daysSinceLast > 1) current = 0;
+
+    document.getElementById('streak-current').textContent = current + ' day' + (current !== 1 ? 's' : '');
+    document.getElementById('streak-longest').textContent = longest + ' day' + (longest !== 1 ? 's' : '');
+    document.getElementById('streak-last').textContent = unique[unique.length - 1];
+  })();
+  </script>
+
   <div class="charts-grid">
     <div class="chart-container">
       <h2>Platform Distribution</h2>
@@ -127,6 +210,16 @@
       </div>
     </div>
   </div>
+
+  {{- /* Time to Pwn chart */ -}}
+  {{- if $ttpData }}
+  <div class="chart-container chart-wide ttp-container">
+    <h2>Time to Pwn</h2>
+    <div class="chart-wrap chart-wrap-wide">
+      <canvas id="chart-ttp"></canvas>
+    </div>
+  </div>
+  {{- end }}
 
   {{- /* Completion Heatmap — GitHub-style contribution calendar */ -}}
   {{- $dateCounts := dict -}}
@@ -160,10 +253,8 @@
 
     var today = new Date();
     today.setHours(0,0,0,0);
-    // Go back ~52 weeks (364 days)
     var start = new Date(today);
     start.setDate(start.getDate() - 363);
-    // Align to Sunday
     var dayOfWeek = start.getDay();
     start.setDate(start.getDate() - dayOfWeek);
 
@@ -173,7 +264,6 @@
     document.body.appendChild(tooltip);
 
     var monthPositions = {};
-    var colIndex = 0;
     var d = new Date(start);
 
     while (d <= today) {
@@ -199,7 +289,6 @@
         tooltip.style.display = 'none';
       });
 
-      // Track month labels
       var mon = d.getMonth();
       var weekCol = Math.floor((d - start) / (7 * 86400000));
       var monKey = d.getFullYear() + '-' + mon;
@@ -211,8 +300,6 @@
       d.setDate(d.getDate() + 1);
     }
 
-    // Month labels
-    var totalWeeks = Math.ceil(((today - start) / 86400000 + 1) / 7);
     Object.keys(monthPositions).sort().forEach(function(k) {
       var info = monthPositions[k];
       var span = document.createElement('span');
@@ -296,7 +383,6 @@
   var monthLabels = [{{ range $i, $m := $sortedMonths }}{{ if $i }},{{ end }}'{{ $m.month }}'{{ end }}];
   var monthData = [{{ range $i, $m := $sortedMonths }}{{ if $i }},{{ end }}{{ $m.count }}{{ end }}];
 
-  // Cumulative sum
   var cumulative = [];
   var sum = 0;
   for (var i = 0; i < monthData.length; i++) {
@@ -378,6 +464,72 @@
       }
     }
   });
+
+  // Time to Pwn bar chart
+  var ttpCanvas = document.getElementById('chart-ttp');
+  if (ttpCanvas) {
+    var ttpRaw = [{{ range $i, $d := $ttpData }}{{ if $i }},{{ end }}{ t: '{{ $d.title }}', time: '{{ $d.time }}', diff: '{{ $d.difficulty }}' }{{ end }}];
+    var diffColors = { easy: green, medium: orange, hard: red, insane: purple, unknown: muted };
+
+    function parseTime(str) {
+      var mins = 0;
+      var h = str.match(/(\d+)\s*h/i);
+      var m = str.match(/(\d+)\s*m/i);
+      if (h) mins += parseInt(h[1], 10) * 60;
+      if (m) mins += parseInt(m[1], 10);
+      if (!h && !m) {
+        var n = parseInt(str, 10);
+        if (!isNaN(n)) mins = n;
+      }
+      return mins;
+    }
+
+    var ttpLabels = [];
+    var ttpValues = [];
+    var ttpColors = [];
+    ttpRaw.forEach(function(d) {
+      var mins = parseTime(d.time);
+      if (mins > 0) {
+        ttpLabels.push(d.t.length > 20 ? d.t.slice(0, 18) + '..' : d.t);
+        ttpValues.push(mins);
+        ttpColors.push(diffColors[d.diff] || muted);
+      }
+    });
+
+    if (ttpValues.length > 0) {
+      new Chart(ttpCanvas, {
+        type: 'bar',
+        data: {
+          labels: ttpLabels,
+          datasets: [{
+            label: 'Minutes',
+            data: ttpValues,
+            backgroundColor: ttpColors,
+            borderColor: ttpColors,
+            borderWidth: 1,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y',
+          plugins: { legend: { display: false } },
+          scales: {
+            x: {
+              beginAtZero: true,
+              title: { display: true, text: 'Minutes', color: '#8b949e' },
+              grid: { color: gridColor }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { font: { size: 10 } }
+            }
+          }
+        }
+      });
+    }
+  }
 })();
 </script>
 {{ end }}

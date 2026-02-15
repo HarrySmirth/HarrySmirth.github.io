@@ -46,6 +46,13 @@
 <meta property="og:locale" content="en_GB">
 {{- $ogImage := "/images/og-default.png" | absURL }}
 {{- with .Params.cover }}{{ with .image }}{{ $ogImage = . | absURL }}{{ end }}{{ end }}
+{{- /* Dynamic og:image — point to the generated terminal-card HTML for screenshotting.
+       To convert to actual PNG images, add a build step using Puppeteer/Playwright
+       to screenshot each og.html into og.png and update the URL below.
+       For now this provides a styled preview page at /[page-path]/og.html */ -}}
+{{- if and .IsPage (not .Params.cover) }}
+  {{- $ogImage = (printf "%s%s" .Permalink "og.html") -}}
+{{- end }}
 <meta property="og:image" content="{{ $ogImage }}">
 
 {{- /* Twitter / LinkedIn Card */ -}}

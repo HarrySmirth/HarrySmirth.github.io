@@ -104,6 +104,14 @@ weight = 50
 
 [outputs]
 home = ["HTML", "RSS", "JSON"]
+page = ["HTML", "OGImage"]
+
+[outputFormats.OGImage]
+baseName = "og"
+mediaType = "text/html"
+isHTML = true
+notAlternative = true
+permalinkable = false
 
 [markup]
 [markup.highlight]
