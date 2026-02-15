@@ -22,7 +22,164 @@
         <input id="searchInput" autofocus placeholder="Search writeups, techniques, tools..."
             aria-label="search" type="search" autocomplete="off" maxlength="64">
     </div>
-    <ul id="searchResults" aria-label="search results"></ul>
+    <div id="searchStatus" class="search-status"></div>
+    <div id="searchResults" class="search-results"></div>
 </div>
+
+<script>
+(function() {
+  var input = document.getElementById('searchInput');
+  var results = document.getElementById('searchResults');
+  var status = document.getElementById('searchStatus');
+  var index = null;
+  var activeIdx = -1;
+  var debounceTimer = null;
+
+  // Load JSON index
+  fetch('/index.json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) { index = data; })
+    .catch(function() {
+      status.textContent = '$ error: failed to load search index';
+      status.classList.add('search-error');
+    });
+
+  input.addEventListener('input', function() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(doSearch, 150);
+  });
+
+  function doSearch() {
+    var query = input.value.trim().toLowerCase();
+    activeIdx = -1;
+
+    if (!query || query.length < 2) {
+      results.innerHTML = '';
+      status.textContent = '';
+      return;
+    }
+
+    if (!index) {
+      status.textContent = '$ loading index...';
+      return;
+    }
+
+    var matches = [];
+    var terms = query.split(/\s+/);
+
+    index.forEach(function(item) {
+      var haystack = (item.title + ' ' + item.content + ' ' + (item.tags || []).join(' ')).toLowerCase();
+      var score = 0;
+      var allMatch = true;
+      terms.forEach(function(term) {
+        if (haystack.indexOf(term) === -1) {
+          allMatch = false;
+        } else {
+          // Title matches score higher
+          if (item.title.toLowerCase().indexOf(term) !== -1) score += 10;
+          // Tag matches
+          if ((item.tags || []).some(function(t) { return t.toLowerCase().indexOf(term) !== -1; })) score += 5;
+          // Content matches
+          score += 1;
+        }
+      });
+      if (allMatch && score > 0) {
+        matches.push({ item: item, score: score });
+      }
+    });
+
+    matches.sort(function(a, b) { return b.score - a.score; });
+
+    // Group by section
+    var writeups = [];
+    var posts = [];
+    var other = [];
+    matches.forEach(function(m) {
+      if (m.item.section === 'writeups') writeups.push(m.item);
+      else if (m.item.section === 'posts') posts.push(m.item);
+      else other.push(m.item);
+    });
+
+    status.textContent = '$ ' + matches.length + ' result' + (matches.length !== 1 ? 's' : '') + ' for \'' + input.value.trim() + '\'';
+    status.classList.remove('search-error');
+
+    var html = '';
+    if (writeups.length) {
+      html += '<div class="search-group"><div class="search-group-header">./writeups/ (' + writeups.length + ')</div>';
+      writeups.forEach(function(item) { html += renderResult(item, query); });
+      html += '</div>';
+    }
+    if (posts.length) {
+      html += '<div class="search-group"><div class="search-group-header">./posts/ (' + posts.length + ')</div>';
+      posts.forEach(function(item) { html += renderResult(item, query); });
+      html += '</div>';
+    }
+    if (other.length) {
+      html += '<div class="search-group"><div class="search-group-header">./pages/ (' + other.length + ')</div>';
+      other.forEach(function(item) { html += renderResult(item, query); });
+      html += '</div>';
+    }
+
+    results.innerHTML = html;
+  }
+
+  function renderResult(item, query) {
+    var badges = '';
+    if (item.platform) {
+      var cls = item.platform === 'THM' ? 'badge-thm' : 'badge-htb';
+      badges += '<span class="search-badge ' + cls + '">' + item.platform + '</span>';
+    }
+    if (item.difficulty) {
+      badges += '<span class="search-badge badge-' + item.difficulty + '">' + item.difficulty + '</span>';
+    }
+
+    // Build snippet with highlight
+    var snippet = item.summary || item.content || '';
+    snippet = snippet.substring(0, 200);
+    var terms = query.split(/\s+/);
+    terms.forEach(function(term) {
+      if (!term) return;
+      var escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      var re = new RegExp('(' + escaped + ')', 'gi');
+      snippet = snippet.replace(re, '<mark>$1</mark>');
+    });
+
+    var path = item.permalink.replace(/https?:\/\/[^\/]+/, '').replace(/\/$/, '') || '/';
+
+    return '<a class="search-result-item" href="' + item.permalink + '">' +
+      '<div class="search-result-path">' + path + '</div>' +
+      '<div class="search-result-title">' + item.title + badges + '</div>' +
+      '<div class="search-result-snippet">' + snippet + '</div>' +
+      '<div class="search-result-date">' + (item.date || '') + '</div>' +
+    '</a>';
+  }
+
+  // Keyboard navigation
+  input.addEventListener('keydown', function(e) {
+    var items = results.querySelectorAll('.search-result-item');
+    if (!items.length) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      updateActive(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, -1);
+      updateActive(items);
+    } else if (e.key === 'Enter' && activeIdx >= 0 && items[activeIdx]) {
+      e.preventDefault();
+      items[activeIdx].click();
+    }
+  });
+
+  function updateActive(items) {
+    items.forEach(function(el, i) {
+      el.classList.toggle('search-active', i === activeIdx);
+      if (i === activeIdx) el.scrollIntoView({ block: 'nearest' });
+    });
+  }
+})();
+</script>
 
 {{- end }}{{/* end main */}}

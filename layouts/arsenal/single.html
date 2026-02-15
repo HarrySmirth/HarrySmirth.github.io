@@ -36,6 +36,42 @@
       </div>
       <p class="tool-desc">Network exploration and security auditing. The gold standard for port scanning and service enumeration.</p>
       <div class="tool-usage"><code>nmap -sC -sV -oN scan.txt 10.10.10.1</code></div>
+      <div class="cmd-builder" data-tool="nmap">
+        <div class="cmd-builder-header"><span class="cmd-builder-prompt">$</span> command builder</div>
+        <div class="cmd-builder-fields">
+          <div class="cmd-field">
+            <label class="cmd-label">Target IP/Host</label>
+            <input type="text" class="cmd-input" data-param="target" placeholder="10.10.10.1">
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Scan Type</label>
+            <select class="cmd-select" data-param="scantype">
+              <option value="-sC -sV">Default Scripts + Version (-sC -sV)</option>
+              <option value="-sS">SYN Stealth (-sS)</option>
+              <option value="-sU">UDP Scan (-sU)</option>
+              <option value="-A">Aggressive (-A)</option>
+              <option value="-sn">Ping Sweep (-sn)</option>
+            </select>
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Port Range</label>
+            <select class="cmd-select" data-param="ports">
+              <option value="">Top 1000 (default)</option>
+              <option value="-p-">All Ports (-p-)</option>
+              <option value="-p 1-1000">1-1000</option>
+              <option value="--top-ports 100">Top 100</option>
+            </select>
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Output File</label>
+            <input type="text" class="cmd-input" data-param="output" placeholder="scan.txt">
+          </div>
+        </div>
+        <div class="cmd-output">
+          <code class="cmd-result"></code>
+          <button class="cmd-copy-btn" aria-label="Copy command">COPY</button>
+        </div>
+      </div>
       <a class="tool-link" href="https://nmap.org/" target="_blank" rel="noopener">nmap.org &rarr;</a>
     </div>
 
@@ -46,6 +82,39 @@
       </div>
       <p class="tool-desc">Directory and DNS brute-forcing tool written in Go. Fast and flexible for content discovery.</p>
       <div class="tool-usage"><code>gobuster dir -u http://target -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt</code></div>
+      <div class="cmd-builder" data-tool="gobuster">
+        <div class="cmd-builder-header"><span class="cmd-builder-prompt">$</span> command builder</div>
+        <div class="cmd-builder-fields">
+          <div class="cmd-field">
+            <label class="cmd-label">Target URL</label>
+            <input type="text" class="cmd-input" data-param="target" placeholder="http://10.10.10.1">
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Mode</label>
+            <select class="cmd-select" data-param="mode">
+              <option value="dir">Directory (dir)</option>
+              <option value="dns">DNS Subdomain (dns)</option>
+              <option value="vhost">Virtual Host (vhost)</option>
+            </select>
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Wordlist</label>
+            <select class="cmd-select" data-param="wordlist">
+              <option value="/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt">directory-list-2.3-medium</option>
+              <option value="/usr/share/wordlists/dirb/common.txt">dirb/common.txt</option>
+              <option value="/usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt">raft-medium-directories</option>
+            </select>
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Extensions</label>
+            <input type="text" class="cmd-input" data-param="extensions" placeholder="php,html,txt">
+          </div>
+        </div>
+        <div class="cmd-output">
+          <code class="cmd-result"></code>
+          <button class="cmd-copy-btn" aria-label="Copy command">COPY</button>
+        </div>
+      </div>
       <a class="tool-link" href="https://github.com/OJ/gobuster" target="_blank" rel="noopener">github.com/OJ/gobuster &rarr;</a>
     </div>
 
@@ -56,6 +125,35 @@
       </div>
       <p class="tool-desc">Fast web fuzzer written in Go. Supports directory discovery, virtual host enumeration, and parameter fuzzing.</p>
       <div class="tool-usage"><code>ffuf -u http://target/FUZZ -w wordlist.txt -mc 200,301</code></div>
+      <div class="cmd-builder" data-tool="ffuf">
+        <div class="cmd-builder-header"><span class="cmd-builder-prompt">$</span> command builder</div>
+        <div class="cmd-builder-fields">
+          <div class="cmd-field">
+            <label class="cmd-label">Target URL (use FUZZ keyword)</label>
+            <input type="text" class="cmd-input" data-param="target" placeholder="http://10.10.10.1/FUZZ">
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Wordlist</label>
+            <select class="cmd-select" data-param="wordlist">
+              <option value="/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt">directory-list-2.3-medium</option>
+              <option value="/usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt">raft-medium-directories</option>
+              <option value="/usr/share/wordlists/dirb/common.txt">dirb/common.txt</option>
+            </select>
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Match Status Codes</label>
+            <input type="text" class="cmd-input" data-param="matchcodes" placeholder="200,301,302">
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Filter Size (hide)</label>
+            <input type="text" class="cmd-input" data-param="filtersize" placeholder="e.g. 1234">
+          </div>
+        </div>
+        <div class="cmd-output">
+          <code class="cmd-result"></code>
+          <button class="cmd-copy-btn" aria-label="Copy command">COPY</button>
+        </div>
+      </div>
       <a class="tool-link" href="https://github.com/ffuf/ffuf" target="_blank" rel="noopener">github.com/ffuf/ffuf &rarr;</a>
     </div>
 
@@ -77,6 +175,44 @@
       </div>
       <p class="tool-desc">Automatic SQL injection and database takeover tool. Supports detection and exploitation of SQL injection flaws.</p>
       <div class="tool-usage"><code>sqlmap -u "http://target/page?id=1" --dbs --batch</code></div>
+      <div class="cmd-builder" data-tool="sqlmap">
+        <div class="cmd-builder-header"><span class="cmd-builder-prompt">$</span> command builder</div>
+        <div class="cmd-builder-fields">
+          <div class="cmd-field">
+            <label class="cmd-label">Target URL (with parameter)</label>
+            <input type="text" class="cmd-input" data-param="target" placeholder="http://target/page?id=1">
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Action</label>
+            <select class="cmd-select" data-param="action">
+              <option value="--dbs">List Databases (--dbs)</option>
+              <option value="-D db --tables">List Tables (-D db --tables)</option>
+              <option value="--dump">Dump Data (--dump)</option>
+              <option value="--os-shell">OS Shell (--os-shell)</option>
+            </select>
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Level/Risk</label>
+            <select class="cmd-select" data-param="level">
+              <option value="">Default (1/1)</option>
+              <option value="--level 3 --risk 2">Level 3 / Risk 2</option>
+              <option value="--level 5 --risk 3">Level 5 / Risk 3 (max)</option>
+            </select>
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Options</label>
+            <select class="cmd-select" data-param="options">
+              <option value="--batch">Auto mode (--batch)</option>
+              <option value="--batch --random-agent">Batch + Random UA</option>
+              <option value="--batch --tamper=space2comment">Batch + Tamper</option>
+            </select>
+          </div>
+        </div>
+        <div class="cmd-output">
+          <code class="cmd-result"></code>
+          <button class="cmd-copy-btn" aria-label="Copy command">COPY</button>
+        </div>
+      </div>
       <a class="tool-link" href="https://sqlmap.org/" target="_blank" rel="noopener">sqlmap.org &rarr;</a>
     </div>
 
@@ -119,6 +255,47 @@
       </div>
       <p class="tool-desc">Advanced GPU-based password recovery. Supports 350+ hash types with rule-based and mask attacks.</p>
       <div class="tool-usage"><code>hashcat -m 0 -a 0 hashes.txt /usr/share/wordlists/rockyou.txt</code></div>
+      <div class="cmd-builder" data-tool="hashcat">
+        <div class="cmd-builder-header"><span class="cmd-builder-prompt">$</span> command builder</div>
+        <div class="cmd-builder-fields">
+          <div class="cmd-field">
+            <label class="cmd-label">Hash File</label>
+            <input type="text" class="cmd-input" data-param="hashfile" placeholder="hashes.txt">
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Hash Type (-m)</label>
+            <select class="cmd-select" data-param="hashtype">
+              <option value="0">MD5 (0)</option>
+              <option value="100">SHA1 (100)</option>
+              <option value="1400">SHA-256 (1400)</option>
+              <option value="1800">sha512crypt (1800)</option>
+              <option value="3200">bcrypt (3200)</option>
+              <option value="1000">NTLM (1000)</option>
+              <option value="5600">NetNTLMv2 (5600)</option>
+              <option value="13100">Kerberoast (13100)</option>
+            </select>
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Attack Mode</label>
+            <select class="cmd-select" data-param="attackmode">
+              <option value="0">Dictionary (0)</option>
+              <option value="3">Brute-force/Mask (3)</option>
+              <option value="6">Hybrid Dict+Mask (6)</option>
+            </select>
+          </div>
+          <div class="cmd-field">
+            <label class="cmd-label">Wordlist</label>
+            <select class="cmd-select" data-param="wordlist">
+              <option value="/usr/share/wordlists/rockyou.txt">rockyou.txt</option>
+              <option value="/usr/share/seclists/Passwords/darkweb2017-top10000.txt">darkweb2017-top10000</option>
+            </select>
+          </div>
+        </div>
+        <div class="cmd-output">
+          <code class="cmd-result"></code>
+          <button class="cmd-copy-btn" aria-label="Copy command">COPY</button>
+        </div>
+      </div>
       <a class="tool-link" href="https://hashcat.net/hashcat/" target="_blank" rel="noopener">hashcat.net &rarr;</a>
     </div>
 
@@ -193,28 +370,103 @@ impacket-secretsdump -just-dc domain/user@10.10.10.1</code></div>
 
 <script>
 (function() {
+  // Arsenal filter bar
   var filterBar = document.getElementById('arsenal-filter-bar');
   var cards = document.querySelectorAll('.tool-card');
-  if (!filterBar || !cards.length) return;
-
-  filterBar.addEventListener('click', function(e) {
-    var btn = e.target.closest('.filter-btn');
-    if (!btn) return;
-
-    var value = btn.getAttribute('data-value');
-
-    filterBar.querySelectorAll('.filter-btn').forEach(function(b) {
-      b.classList.remove('active');
+  if (filterBar && cards.length) {
+    filterBar.addEventListener('click', function(e) {
+      var btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      var value = btn.getAttribute('data-value');
+      filterBar.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      cards.forEach(function(card) {
+        card.style.display = (value === 'all' || card.getAttribute('data-category') === value) ? '' : 'none';
+      });
     });
-    btn.classList.add('active');
+  }
 
-    cards.forEach(function(card) {
-      if (value === 'all' || card.getAttribute('data-category') === value) {
-        card.style.display = '';
-      } else {
-        card.style.display = 'none';
-      }
+  // Command builders
+  var builders = {
+    nmap: function(p) {
+      var cmd = 'nmap';
+      if (p.scantype) cmd += ' ' + p.scantype;
+      if (p.ports) cmd += ' ' + p.ports;
+      if (p.output) cmd += ' -oN ' + p.output;
+      cmd += ' ' + (p.target || '10.10.10.1');
+      return cmd;
+    },
+    gobuster: function(p) {
+      var cmd = 'gobuster ' + (p.mode || 'dir');
+      cmd += ' -u ' + (p.target || 'http://10.10.10.1');
+      cmd += ' -w ' + (p.wordlist || '/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt');
+      if (p.extensions) cmd += ' -x ' + p.extensions;
+      return cmd;
+    },
+    ffuf: function(p) {
+      var cmd = 'ffuf';
+      cmd += ' -u ' + (p.target || 'http://10.10.10.1/FUZZ');
+      cmd += ' -w ' + (p.wordlist || '/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt');
+      if (p.matchcodes) cmd += ' -mc ' + p.matchcodes;
+      if (p.filtersize) cmd += ' -fs ' + p.filtersize;
+      return cmd;
+    },
+    hashcat: function(p) {
+      var cmd = 'hashcat';
+      cmd += ' -m ' + (p.hashtype || '0');
+      cmd += ' -a ' + (p.attackmode || '0');
+      cmd += ' ' + (p.hashfile || 'hashes.txt');
+      cmd += ' ' + (p.wordlist || '/usr/share/wordlists/rockyou.txt');
+      return cmd;
+    },
+    sqlmap: function(p) {
+      var cmd = 'sqlmap';
+      cmd += ' -u "' + (p.target || 'http://target/page?id=1') + '"';
+      if (p.action) cmd += ' ' + p.action;
+      if (p.level) cmd += ' ' + p.level;
+      if (p.options) cmd += ' ' + p.options;
+      return cmd;
+    }
+  };
+
+  document.querySelectorAll('.cmd-builder').forEach(function(builder) {
+    var tool = builder.getAttribute('data-tool');
+    var fn = builders[tool];
+    if (!fn) return;
+
+    var resultEl = builder.querySelector('.cmd-result');
+    var inputs = builder.querySelectorAll('.cmd-input, .cmd-select');
+
+    function update() {
+      var params = {};
+      inputs.forEach(function(inp) {
+        params[inp.getAttribute('data-param')] = inp.value;
+      });
+      resultEl.textContent = fn(params);
+    }
+
+    inputs.forEach(function(inp) {
+      inp.addEventListener('input', update);
+      inp.addEventListener('change', update);
     });
+
+    // Copy button
+    var copyBtn = builder.querySelector('.cmd-copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        navigator.clipboard.writeText(resultEl.textContent).then(function() {
+          copyBtn.textContent = 'COPIED!';
+          copyBtn.classList.add('copied');
+          setTimeout(function() {
+            copyBtn.textContent = 'COPY';
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        });
+      });
+    }
+
+    // Initial render
+    update();
   });
 })();
 </script>
